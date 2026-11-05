@@ -109,5 +109,16 @@
   },
   "homePage": {
     "searchKeyWords": "Search Menu"
+  },
+  "auth": {
+    "title": "Sign in",
+    "subtitle": "Enter the email and password of your AAPM account.",
+    "access": "No account yet? Access is granted by your company IT admin.",
+    "signingIn": "Signing in…",
+    "orContinue": "Or continue with",
+    "agree": "By signing in you agree to the",
+    "and": "and",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
   }
 }

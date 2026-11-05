@@ -1,0 +1,124 @@
+{
+  "premium": {
+    "premium": "premium",
+    "UpgradeNow": "Tingkatkan sekarang"
+  },
+  "marketing": {
+    "hero": {
+      "learnPeople": "Lebih dari 1.000 orang sudah bergabung",
+      "getMore": "Selengkapnya",
+      "title": "Siapkah Anda menyaksikan perubahan menyeluruh dalam 365 hari?",
+      "subtitle": "Kerja keras yang konsisten setiap hari akan menumpuk menjadi lompatan besar. Saat perubahan kecil melewati titik kritis, semua usaha Anda akan berbuah."
+    },
+    "features": {
+      "title": "Fitur",
+      "feature1": {
+        "title": "Teknologi modern",
+        "description": "Pustaka komponen yang lebih modern, setiap komponen bebas disesuaikan"
+      },
+      "feature2": {
+        "title": "Mudah dipasang",
+        "description": "Pasang ke server Anda dengan satu klik, tanpa konfigurasi rumit"
+      },
+      "feature3": {
+        "title": "Kode sumber terbuka",
+        "description": "Setiap baris kode terbuka, bebas diubah dan dikembangkan"
+      },
+      "feature4": {
+        "title": "Dukungan komunitas",
+        "description": "Temukan bantuan dan bagikan pengalaman Anda di komunitas"
+      }
+    },
+    "evaluation": {
+      "title": "Ulasan",
+      "subtitle": "Ulasan ini adalah data simulasi, bukan data nyata"
+    },
+    "pricingPlans": {
+      "title": "Paket harga",
+      "subtitle": "Pilih paket yang sesuai untuk Anda",
+      "buy": "Dapatkan sekarang",
+      "hobby": {
+        "title": "Hobi",
+        "description": "Cocok untuk pemula",
+        "price": "399",
+        "discount": "599",
+        "unit": "$",
+        "billing": {
+          "cycle": "",
+          "period": ""
+        },
+        "features": {
+          "feature1": "Gunakan sebagian kode situs",
+          "feature2": "Dapatkan pembaruan teknologi terbaru",
+          "feature3": "Lebih dari 100 komponen",
+          "feature4": "Lebih dari 100 halaman"
+        }
+      },
+      "starter": {
+        "title": "Pemula",
+        "description": "Cocok untuk pemula",
+        "price": "599",
+        "discount": "899",
+        "unit": "$",
+        "billing": {
+          "cycle": "",
+          "period": ""
+        },
+        "features": {
+          "feature1": "Gunakan seluruh kode situs",
+          "feature2": "Baca dokumentasi daring yang lengkap",
+          "feature3": "Dapatkan pembaruan teknis terbaru",
+          "feature4": "Lebih dari 200 komponen",
+          "feature5": "Lebih dari 200 halaman"
+        }
+      },
+      "business": {
+        "title": "Bisnis",
+        "description": "Cocok untuk pemula",
+        "price": "199",
+        "discount": "399",
+        "unit": "$",
+        "billing": {
+          "cycle": "",
+          "period": ""
+        },
+        "features": {
+          "feature1": "Gunakan seluruh kode situs",
+          "feature2": "Baca dokumentasi daring yang lengkap",
+          "feature3": "Dapatkan pembaruan teknis terbaru",
+          "feature4": "Lebih dari 200 komponen",
+          "feature5": "Lebih dari 200 halaman",
+          "feature6": "Dukungan asisten pribadi"
+        }
+      }
+    },
+    "setup": {
+      "title": "Pemasangan",
+      "subtitle": "Mulai digunakan hanya dalam 3 menit"
+    }
+  },
+  "login": "Masuk",
+  "email": "Email",
+  "password": "Kata sandi",
+  "download": "Unduh",
+  "logout": "Keluar",
+  "forgotPassword": "Lupa kata sandi?",
+  "register": "Daftar",
+  "forgotPasswordPage": {
+    "continue": "lanjutkan"
+  },
+  "homePage": {
+    "searchKeyWords": "Cari menu"
+  },
+  "auth": {
+    "title": "Masuk",
+    "subtitle": "Masukkan email dan kata sandi akun AAPM Anda.",
+    "access": "Belum punya akun? Akses diberikan oleh admin TI perusahaan.",
+    "signingIn": "Memeriksa…",
+    "orContinue": "Atau lanjutkan dengan",
+    "agree": "Dengan masuk, Anda menyetujui",
+    "and": "dan",
+    "terms": "Ketentuan Layanan",
+    "privacy": "Kebijakan Privasi"
+  }
+}
