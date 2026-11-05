@@ -73,3 +73,11 @@ These supersede the matching decisions above.
 5. **Dashboard contract (UX-09/UX-12):** company, site, period, updated time and a "Data contoh" label are always visible; every KPI shows its source and a drilldown; the action queue lists owner and next action; the non-zero HD axis is stated; legends toggle series; the trend has a table view.
 6. **Minimal UI:** no gradients/glows, no tiles around icons or the logo, flat hairline bento on the brand page, pastel status tags (≥ 4.5:1 text).
 7. **`eyebrow` utility** replaces the custom `overline` utility, which collided with Tailwind's built-in `overline` (text-decoration).
+
+## Revisions — round 2 (2026-11-05)
+
+8. **Font system mirrors farm.aapm.co.id:** Inter (self-hosted `@fontsource-variable/inter`), `ui-monospace` stack, heading tracking −0.015em, title 28/35, hero 44/48.
+9. **Icons:** Lucide + Health Icons CC0 `animal-chicken` (ERP UX-13 revision b219723) through the same registry; kandang = Warehouse, mortalitas = chicken + status.
+10. **Motion system:** `assets/motion.css` covers every interactive shadcn-vue slot (guarded by `motion-coverage.test.ts`); directional motion blur only on dialogs, menus, toasts and blocked-action shake; page/content entrance is blur-free; tables use FLIP (TransitionGroup, instant leave); tabs get a sliding indicator (`plugins/motion`); smooth scroll via Lenis lerp 0.16, off for reduced motion and touch.
+11. **Identity extension (ERP fc9f438):** two-column sign-in for both login routes, SSO buttons hidden until enabled (`AUTH_CONFIG.sso`), session center, company chooser, MFA and no-access states in the component library.
+12. **Component library** at `/ui-kit` (sidebar "Komponen"): controls, navigation/overlays, tables/visuals, ERP contract components (DocumentHeader, TransactionForm line editor, ApprovalTimeline, StockMovementViewer, JournalPreview, ImpactPreview, AuditDrawer, StateView with all UX-07 states) and identity/session.
