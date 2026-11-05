@@ -1,0 +1,149 @@
+/* Select & menus in sidebar style with a sliding highlight pill (Task 5).
+ * Motion rules live inside @media (prefers-reduced-motion: no-preference).
+ *
+ * The pill element is inserted by plugins/motion/select-pill.module.ts. Every rule here is
+ * unlayered, so it wins over the stock Tailwind utilities in components/ui without editing
+ * them. Panel open/close (aapm-menu-in / -out) and the chevron rotation stay in motion.css.
+ */
+
+/* ── Trigger: sidebar surface on hover, active tint while its panel is open ─── */
+[data-slot='select-trigger']:not(:disabled):not([data-state='open']):hover {
+  background-color: var(--sidebar);
+}
+[data-slot='select-trigger']:not(:disabled):not([data-state='open']):not([aria-invalid='true']):hover {
+  border-color: color-mix(in oklab, var(--nav-active-indicator) 40%, var(--border));
+}
+[data-slot='select-trigger'][data-state='open'] {
+  background-color: var(--nav-active);
+  color: var(--nav-active-foreground);
+}
+[data-slot='select-trigger'][data-state='open']:not([aria-invalid='true']) {
+  border-color: var(--nav-active-indicator);
+}
+[data-slot='select-trigger'][data-state='open'] > svg:last-child {
+  color: var(--nav-active-icon);
+  opacity: 1;
+}
+
+/* ── Panel: corners concentric with the 8px items inside its 4px padding ───── */
+:is([data-slot='select-content'], [data-slot='dropdown-menu-content'], [data-slot='dropdown-menu-sub-content']) {
+  border-radius: calc(var(--radius) + 2px);
+}
+
+/* ── Items: 36px rows with 8px corners, like the sidebar's menu buttons ─────── */
+:is(
+  [data-slot='select-item'],
+  [data-slot='dropdown-menu-item'],
+  [data-slot='dropdown-menu-checkbox-item'],
+  [data-slot='dropdown-menu-radio-item'],
+  [data-slot='dropdown-menu-sub-trigger']
+) {
+  min-height: 2.25rem;
+  border-radius: calc(var(--radius) - 2px);
+}
+/* The chosen value reads like the sidebar's current page */
+:is([data-slot='select-item'], [data-slot='dropdown-menu-radio-item'])[data-state='checked'] {
+  color: var(--nav-active-foreground);
+  font-weight: 600;
+}
+:is(
+    [data-slot='select-item'],
+    [data-slot='dropdown-menu-checkbox-item'],
+    [data-slot='dropdown-menu-radio-item']
+  )[data-state='checked']
+  > span:first-child
+  svg {
+  color: var(--nav-active-icon);
+}
+
+/* ── The pill: one per menu, slides to the highlighted item ─────────────────── */
+[data-aapm-menu-host] {
+  position: relative;
+  isolation: isolate;
+}
+[data-aapm-menu-pill] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--nav-active);
+  /* Even inset hairline like the sidebar's active pill — no one-sided accent bar (user ruling). */
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--nav-active-indicator) 20%, transparent);
+  pointer-events: none;
+}
+/* While the pill exists it is the only highlight: the items' own accent background goes.
+ * Destructive items keep their red highlight (the plugin hides the pill for them). */
+[data-aapm-menu]
+  :is(
+    [data-slot='select-item'],
+    [data-slot='dropdown-menu-item'],
+    [data-slot='dropdown-menu-checkbox-item'],
+    [data-slot='dropdown-menu-radio-item'],
+    [data-slot='dropdown-menu-sub-trigger']
+  )[data-highlighted]:not([data-variant='destructive']),
+[data-aapm-menu] [data-slot='dropdown-menu-sub-trigger'][data-state='open'] {
+  background-color: transparent;
+  color: var(--nav-active-foreground);
+}
+[data-aapm-menu]
+  :is(
+    [data-slot='select-item'],
+    [data-slot='dropdown-menu-item'],
+    [data-slot='dropdown-menu-checkbox-item'],
+    [data-slot='dropdown-menu-radio-item'],
+    [data-slot='dropdown-menu-sub-trigger']
+  )[data-highlighted]:not([data-variant='destructive'])
+  svg:not([class*='text-']),
+[data-aapm-menu] [data-slot='dropdown-menu-sub-trigger'][data-state='open'] svg:not([class*='text-']) {
+  color: var(--nav-active-icon);
+}
+[data-aapm-menu] [data-highlighted] [data-slot='dropdown-menu-shortcut'] {
+  color: var(--nav-active-foreground);
+}
+
+@media (forced-colors: active) {
+  [data-aapm-menu-pill] {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-aapm-menu-pill] {
+    transition:
+      translate 180ms var(--aapm-ease-emphasis),
+      height 180ms var(--aapm-ease-emphasis),
+      opacity 140ms var(--aapm-ease-out);
+  }
+  /* First appearance (nothing was highlighted): jump into place and only fade in */
+  [data-aapm-menu-pill][data-aapm-pill-snap] {
+    transition: opacity 140ms var(--aapm-ease-out);
+  }
+
+  /* Check pops with a small stamp (overrides motion.css's generic dot-in for the indicator) */
+  :is(
+      [data-slot='select-item'],
+      [data-slot='dropdown-menu-checkbox-item'],
+      [data-slot='dropdown-menu-radio-item']
+    )[data-state='checked']
+    > span:first-child
+    svg {
+    animation: aapm-select-check-pop 280ms var(--aapm-ease-emphasis) backwards;
+  }
+}
+@keyframes aapm-select-check-pop {
+  0% {
+    opacity: 0;
+    scale: 0.4;
+    rotate: -24deg;
+  }
+  55% {
+    opacity: 1;
+    scale: 1.2;
+    rotate: 6deg;
+  }
+  100% {
+    scale: 1;
+    rotate: 0deg;
+  }
+}

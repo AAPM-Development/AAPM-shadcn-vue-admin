@@ -1,0 +1,185 @@
+/* Immersive menus (Task 9): pill in every menu type, item cascade, indicator draw, submenu slide.
+ * Motion rules live inside @media (prefers-reduced-motion: no-preference).
+ *
+ * select.css styles select + dropdown menu; this file brings context menus, menubars, comboboxes
+ * and the command palette to the same sidebar look, then adds the motion shared by all of them.
+ * Unlayered, so it wins over the stock Tailwind utilities in components/ui without editing them.
+ */
+
+/* ── Panels: concentric 8px items in 4px padding (as select.css) ────────────── */
+:is(
+  [data-slot='context-menu-content'],
+  [data-slot='context-menu-sub-content'],
+  [data-slot='menubar-content'],
+  [data-slot='menubar-sub-content'],
+  [data-slot='combobox-list']
+) {
+  border-radius: calc(var(--radius) + 2px);
+}
+
+/* ── Items: 36px rows with 8px corners, like the sidebar's menu buttons ─────── */
+:is(
+  [data-slot='context-menu-item'],
+  [data-slot='context-menu-checkbox-item'],
+  [data-slot='context-menu-radio-item'],
+  [data-slot='context-menu-sub-trigger'],
+  [data-slot='menubar-item'],
+  [data-slot='menubar-checkbox-item'],
+  [data-slot='menubar-radio-item'],
+  [data-slot='menubar-sub-trigger'],
+  [data-slot='combobox-item'],
+  [data-slot='command-item']
+) {
+  min-height: 2.25rem;
+  border-radius: calc(var(--radius) - 2px);
+}
+
+/* Menubar trigger reads like the sidebar's hover / current page */
+[data-slot='menubar-trigger'][data-state='open'] {
+  background-color: var(--nav-active);
+  color: var(--nav-active-foreground);
+}
+
+/* The chosen value reads like the sidebar's current page */
+:is(
+  [data-slot='context-menu-radio-item'],
+  [data-slot='menubar-radio-item'],
+  [data-slot='combobox-item']
+)[data-state='checked'] {
+  color: var(--nav-active-foreground);
+  font-weight: 600;
+}
+:is(
+    [data-slot='context-menu-checkbox-item'],
+    [data-slot='context-menu-radio-item'],
+    [data-slot='menubar-checkbox-item'],
+    [data-slot='menubar-radio-item']
+  )[data-state='checked']
+  > span:first-child
+  svg,
+[data-slot='combobox-item-indicator'] svg {
+  color: var(--nav-active-icon);
+}
+
+/* While the pill exists it is the only highlight. Reka focuses highlighted menu items, so the stock
+ * `focus:bg-accent` is neutralised too. Destructive items keep their red highlight. */
+[data-aapm-menu]
+  :is(
+    [data-slot='context-menu-item'],
+    [data-slot='context-menu-checkbox-item'],
+    [data-slot='context-menu-radio-item'],
+    [data-slot='context-menu-sub-trigger'],
+    [data-slot='menubar-item'],
+    [data-slot='menubar-checkbox-item'],
+    [data-slot='menubar-radio-item'],
+    [data-slot='menubar-sub-trigger'],
+    [data-slot='combobox-item'],
+    [data-slot='command-item']
+  ):is([data-highlighted], :focus):not([data-variant='destructive']),
+[data-aapm-menu] :is([data-slot='context-menu-sub-trigger'], [data-slot='menubar-sub-trigger'])[data-state='open'] {
+  background-color: transparent;
+  color: var(--nav-active-foreground);
+}
+[data-aapm-menu]
+  :is(
+    [data-slot='context-menu-item'],
+    [data-slot='context-menu-checkbox-item'],
+    [data-slot='context-menu-radio-item'],
+    [data-slot='context-menu-sub-trigger'],
+    [data-slot='menubar-item'],
+    [data-slot='menubar-checkbox-item'],
+    [data-slot='menubar-radio-item'],
+    [data-slot='menubar-sub-trigger'],
+    [data-slot='combobox-item'],
+    [data-slot='command-item']
+  )[data-highlighted]:not([data-variant='destructive'])
+  svg:not([class*='text-']),
+[data-aapm-menu]
+  :is([data-slot='context-menu-sub-trigger'], [data-slot='menubar-sub-trigger'])[data-state='open']
+  svg:not([class*='text-']) {
+  color: var(--nav-active-icon);
+}
+[data-aapm-menu]
+  [data-highlighted]
+  :is([data-slot='context-menu-shortcut'], [data-slot='menubar-shortcut'], [data-slot='command-shortcut']) {
+  color: var(--nav-active-foreground);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ── Open cascade: the first 8 items rise 4px in, 16ms apart (indices set by the module) ── */
+  [data-aapm-cascade] [style*='--aapm-i'] {
+    animation: aapm-item-in 180ms var(--aapm-ease-out) backwards;
+    animation-delay: calc(60ms + var(--aapm-i) * 16ms);
+  }
+
+  /* ── Indicators: check / radio stamp in (select + dropdown get theirs from select.css) ── */
+  :is(
+      [data-slot='context-menu-checkbox-item'],
+      [data-slot='context-menu-radio-item'],
+      [data-slot='menubar-checkbox-item'],
+      [data-slot='menubar-radio-item']
+    )[data-state='checked']
+    > span:first-child
+    svg,
+  [data-slot='combobox-item-indicator'] svg {
+    animation: aapm-select-check-pop 280ms var(--aapm-ease-emphasis) backwards;
+  }
+
+  /* ── Sub-menus slide in from the side they open on (8px, over the 4px panel default) ── */
+  :is(
+    [data-slot='dropdown-menu-sub-content'],
+    [data-slot='context-menu-sub-content'],
+    [data-slot='menubar-sub-content']
+  )[data-side='right'] {
+    --aapm-from-x: -8px;
+    --aapm-from-y: 0px;
+  }
+  :is(
+    [data-slot='dropdown-menu-sub-content'],
+    [data-slot='context-menu-sub-content'],
+    [data-slot='menubar-sub-content']
+  )[data-side='left'] {
+    --aapm-from-x: 8px;
+    --aapm-from-y: 0px;
+  }
+
+  /* ── Highlight nudge: the leading icon leans in, the sub-menu chevron points the way ── */
+  [data-aapm-menu] [data-highlighted] > svg:first-child,
+  [data-aapm-menu] [data-highlighted] > span:first-child + svg,
+  [data-aapm-menu] :is([data-slot$='sub-trigger']) > svg:last-child,
+  [data-aapm-menu]
+    :is(
+      [data-slot='dropdown-menu-shortcut'],
+      [data-slot='context-menu-shortcut'],
+      [data-slot='menubar-shortcut'],
+      [data-slot='command-shortcut']
+    ) {
+    transition:
+      translate 160ms var(--aapm-ease-emphasis),
+      color 120ms var(--aapm-ease-out);
+  }
+  [data-aapm-menu] [data-highlighted]:not([data-variant='destructive']) > svg:first-child,
+  [data-aapm-menu] [data-highlighted]:not([data-variant='destructive']) > span:first-child + svg {
+    translate: 2px 0;
+  }
+  [data-aapm-menu] :is([data-slot$='sub-trigger']):is([data-highlighted], [data-state='open']) > svg:last-child {
+    translate: 2px 0;
+  }
+  [data-aapm-menu]
+    [data-highlighted]
+    :is(
+      [data-slot='dropdown-menu-shortcut'],
+      [data-slot='context-menu-shortcut'],
+      [data-slot='menubar-shortcut'],
+      [data-slot='command-shortcut']
+    ) {
+    translate: -2px 0;
+  }
+}
+
+@keyframes aapm-item-in {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}

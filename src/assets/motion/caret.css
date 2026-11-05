@@ -1,0 +1,80 @@
+/* Smooth caret overlay, idle blink, delete/empty feedback, placeholder ghost (Task 1).
+ * Motion rules live inside @media (prefers-reduced-motion: no-preference). */
+
+/*
+ * Layers drawn by src/composables/use-smooth-caret.ts (attached by plugins/motion/caret.module.ts
+ * to [data-slot='input'] and [data-slot='pin-input-slot']):
+ * - [data-aapm-caret] > [data-aapm-caret-bar]: decorative 2px caret; x is an inline transform,
+ *   the delete pulse and the "emptied" flick are motion-v animations on the bar.
+ * - [data-aapm-caret-ghost]: fading copy of the placeholder after the first character.
+ * - [data-aapm-caret-host] on the input: the native caret is hidden while the overlay stands in.
+ * Off by default: without motion permission, or under forced colours, only the native caret shows.
+ */
+[data-aapm-caret],
+[data-aapm-caret-ghost] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @media (forced-colors: none) {
+    input[data-aapm-caret-host] {
+      caret-color: transparent;
+    }
+
+    [data-aapm-caret] {
+      display: block;
+      width: 2px;
+      transition: opacity 80ms var(--aapm-ease-out);
+    }
+
+    [data-aapm-caret][data-hidden='true'] {
+      opacity: 0;
+      transition: none;
+    }
+
+    [data-aapm-caret-bar] {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 1px;
+      background: var(--ring);
+    }
+
+    /* Idle for 600ms: soft blink (on ~45%, off ~45% of a 1.1s cycle). */
+    [data-aapm-caret][data-blink='true'] [data-aapm-caret-bar] {
+      animation: aapm-caret-blink 1.1s var(--aapm-ease-out) infinite;
+    }
+
+    /* First character: the placeholder slides 4px right and fades out (160ms). */
+    [data-aapm-caret-ghost] {
+      display: block;
+      color: var(--muted-foreground);
+      animation: aapm-caret-ghost 160ms var(--aapm-ease-out) forwards;
+    }
+
+    @keyframes aapm-caret-blink {
+      0%,
+      40% {
+        opacity: 1;
+      }
+      50%,
+      90% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes aapm-caret-ghost {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(4px);
+      }
+    }
+  }
+}
