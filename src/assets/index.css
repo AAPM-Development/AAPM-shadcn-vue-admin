@@ -1,15 +1,30 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+@import './tokens/brand.generated.css';
 @import './tokens/primitives.css';
 @import './tokens/semantic.css';
 @import './tokens/components.css';
+@import './tokens/tones.css';
 
 @custom-variant dark (&:is(.dark *));
 
+/* Reka's body lock must not create a new scroll container for sticky headers (#107, #249).
+ * Lock the viewport and clip the body instead: menus opened after scrolling keep their anchor. */
+html:has(body[style*='overflow: hidden']) {
+  overflow: hidden;
+}
+body[style*='overflow: hidden'] {
+  overflow: clip !important;
+}
+
 @theme inline {
-  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  /* Font system mirrors farm.aapm.co.id (aapm-tokens.css --aapm-primitive-font-ui), self-hosted */
+  --font-sans:
+    'Inter Variable', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Display face of farm.aapm.co.id (aapmDisplayFont = Outfit, verified from the served font's name table) */
+  --font-display: 'Outfit Variable', Outfit, 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -83,8 +98,9 @@
   --shadow-card-hover: var(--card-shadow-hover);
   --shadow-pop: var(--popover-shadow);
 
-  --tracking-display: -0.035em;
-  --tracking-title: -0.025em;
+  /* farm.aapm.co.id heading tracking is -0.015em; large figures tighten slightly more */
+  --tracking-display: -0.022em;
+  --tracking-title: -0.015em;
   --tracking-overline: 0.14em;
 
   --ease-aapm: var(--aapm-ease-out);
@@ -144,12 +160,15 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    font-feature-settings: 'cv11' 1;
   }
   h1,
   h2,
   h3 {
     text-wrap: balance;
+  }
+  /* Variable text never widens its container (layout standards #41): breaks only when nothing else fits */
+  :where(h1, h2, h3, h4, p, li, dt, dd, label, td, th, button, a, [data-slot='badge']) {
+    overflow-wrap: anywhere;
   }
   ::selection {
     background: color-mix(in oklab, var(--highlight) 40%, transparent);
@@ -287,4 +306,46 @@
     background-image: none;
     -webkit-text-fill-color: currentColor;
   }
+}
+
+/*
+ * Current-page indication (UX-03). Unlayered so it wins over the sidebar primitive's
+ * utilities without editing components/ui. The tint itself is drawn by the sliding pill
+ * in components/app-sidebar/menu-button.vue; sub-items get the tint directly.
+ */
+[data-sidebar='menu-button'][data-active='true'] {
+  background: transparent;
+  color: var(--nav-active-foreground);
+  font-weight: 600;
+}
+[data-sidebar='menu-button'][data-active='true'] > svg {
+  color: var(--nav-active-icon);
+}
+[data-sidebar='menu-sub-button'][data-active='true'] {
+  background: var(--nav-active);
+  color: var(--nav-active-foreground);
+  font-weight: 600;
+}
+
+/*
+ * Surface separation (user: "semua layar putih, garis numpuk"). Cards float on the neutral canvas
+ * with a hairline ring + diffused shadow (--card-shadow) instead of a hard 1px border, so a card's
+ * edge never stacks with the lines inside it. Unlayered: wins over the stock `border` utility.
+ */
+[data-slot='card'] {
+  border-color: transparent;
+  box-shadow: var(--card-shadow);
+}
+@media (forced-colors: active) {
+  [data-slot='card'] {
+    border-color: CanvasText;
+  }
+}
+
+/* Font system (farm.aapm.co.id): Outfit for page-level display type, Inter for everything else */
+h1,
+[data-display] {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+  font-weight: 600;
 }

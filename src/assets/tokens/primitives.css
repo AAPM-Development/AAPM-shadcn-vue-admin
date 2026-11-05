@@ -2,7 +2,9 @@
  * AAPM primitives — layer 1 of 3 (primitive → semantic → component).
  * Raw values only. Screens never read these directly; semantic.css maps them to roles.
  *
- * Brand Core (fixed, from the official SVG masters — AAPM_Ecosystem/docs/design-system/brand):
+ * Brand Core and Digital masters come from brand.generated.css (synced from AAPM_Ecosystem
+ * docs/design-system/brand by `pnpm tokens:sync`); this file only derives ramps from them.
+ * Brand Core (fixed, from the official SVG masters):
  *   green #318139 · orange #D4451A · white #FFFFFF · dark-logo neutral #CCCCCC
  * Digital Brand Extension:
  *   lime #B4E717 · lime soft #C3EC45 · deep green #2C7433 (warm canvas / tints / ink are not
@@ -11,21 +13,21 @@
  */
 :root {
   /* Brand Core */
-  --aapm-core-green: #318139;
-  --aapm-core-orange: #d4451a;
-  --aapm-core-white: #ffffff;
-  --aapm-core-neutral: #cccccc;
+  --aapm-core-green: var(--aapm-brand-core-green);
+  --aapm-core-orange: var(--aapm-brand-core-orange);
+  --aapm-core-white: var(--aapm-brand-core-white);
+  --aapm-core-neutral: var(--aapm-brand-core-neutral-dark-variant);
 
   /* Green ramp (600 = Brand Core, 700 = Digital deep green, 50 = Digital green tint) */
-  --aapm-green-50: #f2fcf3;
+  --aapm-green-50: var(--aapm-brand-digital-green-tint);
   --aapm-green-100: #e2f3e4;
   --aapm-green-200: #c3e6c8;
   --aapm-green-300: #94cf9d;
   --aapm-green-400: #5fb16c;
   --aapm-green-500: #3da654;
   --aapm-green-550: #4cb563;
-  --aapm-green-600: #318139;
-  --aapm-green-700: #2c7433;
+  --aapm-green-600: var(--aapm-brand-core-green);
+  --aapm-green-700: var(--aapm-brand-digital-deep-green);
   --aapm-green-800: #215a28;
   --aapm-green-900: #173f1d;
   --aapm-green-950: #0c2410;
@@ -35,12 +37,12 @@
   --aapm-orange-100: #fbe0d5;
   --aapm-orange-300: #f0a283;
   --aapm-orange-500: #e0612d;
-  --aapm-orange-600: #d4451a;
+  --aapm-orange-600: var(--aapm-brand-core-orange);
   --aapm-orange-700: #b23810;
 
   /* Lime (500 = Digital lime, 400 = lime soft; 600/700 are chart-safe steps) */
-  --aapm-lime-400: #c3ec45;
-  --aapm-lime-500: #b4e717;
+  --aapm-lime-400: var(--aapm-brand-digital-lime-soft);
+  --aapm-lime-500: var(--aapm-brand-digital-lime);
   --aapm-lime-600: #8cb80f;
   --aapm-lime-700: #7fa312;
   --aapm-lime-900: #3c4d08;
@@ -70,6 +72,8 @@
   --aapm-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --aapm-ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
   --aapm-ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  /* gentle back-out for small state changes (dots, checks, thumbs) */
+  --aapm-ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
   --aapm-duration-fast: 150ms;
   --aapm-duration-base: 220ms;
   --aapm-duration-slow: 360ms;

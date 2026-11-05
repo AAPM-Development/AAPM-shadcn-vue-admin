@@ -1,0 +1,25 @@
+/* Generated from src/design-system/brand/aapm-brand.tokens.json by `pnpm tokens:sync` — do not edit.
+ * Source of truth: AAPM_Ecosystem docs/design-system/brand (see src/design-system/brand/SOURCE.md). */
+:root {
+  --aapm-brand-core-green: #318139;
+  --aapm-brand-core-orange: #D4451A;
+  --aapm-brand-core-white: #FFFFFF;
+  --aapm-brand-core-neutral-dark-variant: #CCCCCC;
+  --aapm-brand-digital-lime: #B4E717;
+  --aapm-brand-digital-lime-soft: #C3EC45;
+  --aapm-brand-digital-deep-green: #2C7433;
+  --aapm-brand-digital-warm-canvas: #F6F5F2;
+  --aapm-brand-digital-green-tint: #F2FCF3;
+  --aapm-brand-digital-soft-surface: #EFF5EF;
+  --aapm-brand-digital-ink: #10191A;
+  --aapm-brand-semantic-brand-primary: var(--aapm-brand-core-green);
+  --aapm-brand-semantic-brand-accent: var(--aapm-brand-core-orange);
+  --aapm-brand-semantic-brand-highlight: var(--aapm-brand-digital-lime);
+  --aapm-brand-semantic-brand-highlight-soft: var(--aapm-brand-digital-lime-soft);
+  --aapm-brand-semantic-brand-surface-deep: var(--aapm-brand-digital-deep-green);
+  --aapm-brand-semantic-surface-canvas-warm: var(--aapm-brand-digital-warm-canvas);
+  --aapm-brand-semantic-surface-brand-tint: var(--aapm-brand-digital-green-tint);
+  --aapm-brand-semantic-surface-brand-soft: var(--aapm-brand-digital-soft-surface);
+  --aapm-brand-semantic-text-ink: var(--aapm-brand-digital-ink);
+  --aapm-brand-semantic-text-on-brand: var(--aapm-brand-core-white);
+}
