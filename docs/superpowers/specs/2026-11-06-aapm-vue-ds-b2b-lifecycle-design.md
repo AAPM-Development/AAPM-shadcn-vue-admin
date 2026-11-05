@@ -174,7 +174,7 @@ export const ACTIVITY_STATE: Partial<Record<ActivityKind, SemanticState>> // app
 The demo state machine lives in `src/pages/ui-kit/components/kit-correction-flow.vue` and uses local refs only.
 
 1. **Document.** `DocumentHeader` for GRN-2611-0086, status `posted`, with a `KeyValueList` summary.
-2. **Readiness.** `ReadinessReview` subject "Koreksi GRN-2611-0086" → `blocked`. The blockers are "Periode November masih terbuka" (✓ satisfied), "Faktur pembelian PI-2611-031 sudah memakai baris 2" (resolution: "Batalkan tautan faktur", with a button) and "Stok lot KL-2611-11 sudah keluar 200 kg" (informational, non-blocking, shown under satisfied). Pressing "Batalkan tautan faktur" re-evaluates: the demo sets the result to `ready`.
+2. **Readiness.** `ReadinessReview` subject "Koreksi GRN-2611-0086" → `blocked`. There is one blocker: "Faktur pembelian PI-2611-031 sudah memakai baris 2" (resolution: "Batalkan tautan faktur", with a button). The satisfied conditions are "Periode November masih terbuka" and "Stok lot KL-2611-11 cukup untuk koreksi". Pressing "Batalkan tautan faktur" re-evaluates: the demo sets the result to `ready`.
 3. **Action.** "Buka koreksi" is a `ReasonedAction` that stays disabled, with the first blocker's reason, until the result is `ready`.
 4. **Correction.** `CorrectionForm` holds the line-2 quantity (1.200 kg) and lot. The user changes the quantity to 1.250,5 kg and types a reason. The `RevisionDiff` preview updates live. Submitting moves the document chip to `work.pending_review`.
 5. **Decision.** `DecisionForm` (Setujui / Kembalikan / Tolak; reason required for Kembalikan and Tolak) goes through the confirmation dialog. Approving runs a 900 ms simulated save, then the chip moves to `history.corrected`.
