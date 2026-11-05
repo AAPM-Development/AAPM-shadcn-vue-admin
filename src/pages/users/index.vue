@@ -37,8 +37,8 @@ function mockLoading() {
     <template #actions>
       <UserInvite />
       <UserCreate />
-      <Button variant="outline" @click="mockLoading">
-        <LoaderIcon />Mock Loading
+      <Button variant="outline" :disabled="loading" :aria-busy="loading" @click="mockLoading">
+        <LoaderIcon :data-loading="loading || undefined" />{{ loading ? 'Loading…' : 'Mock Loading' }}
       </Button>
     </template>
     <DataTable :loading :data="users" :columns="columns">

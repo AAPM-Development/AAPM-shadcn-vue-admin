@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { IconName } from '@/components/aapm/icon/registry'
 
-import AapmIcon from '@/components/aapm/icon/AapmIcon.vue'
+import ToneChip from '@/components/aapm/tone/tone-chip.vue'
+import { toneOf } from '@/components/aapm/tone/tones'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -13,11 +14,11 @@ import { recentOrders } from '../data/farm-overview'
 import PanelHeader from './panel-header.vue'
 
 /** Domain vocabulary: draft ≠ dikirim ≠ lunas ≠ jatuh tempo (UX-02). */
-const STATUS: Record<OrderStatus, { label: string, icon: IconName, class: string }> = {
-  draft: { label: 'Draft', icon: 'edit', class: 'bg-muted text-muted-foreground' },
-  shipped: { label: 'Dikirim', icon: 'truck', class: 'bg-info-soft text-info' },
-  paid: { label: 'Lunas', icon: 'success', class: 'bg-success-soft text-success' },
-  due: { label: 'Jatuh tempo', icon: 'warning', class: 'bg-warning-soft text-warning' },
+const STATUS: Record<OrderStatus, { label: string, icon: IconName }> = {
+  draft: { label: 'Draft', icon: 'edit' },
+  shipped: { label: 'Dikirim', icon: 'truck' },
+  paid: { label: 'Lunas', icon: 'success' },
+  due: { label: 'Jatuh tempo', icon: 'warning' },
 }
 </script>
 
@@ -75,10 +76,9 @@ const STATUS: Record<OrderStatus, { label: string, icon: IconName, class: string
               {{ formatRupiah(order.amount).replace('Rp ', '') }}
             </TableCell>
             <TableCell>
-              <span class="inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-semibold" :class="STATUS[order.status].class">
-                <AapmIcon :name="STATUS[order.status].icon" :size="13" />
+              <ToneChip :tone="toneOf('order', order.status)" :icon="STATUS[order.status].icon">
                 {{ STATUS[order.status].label }}
-              </span>
+              </ToneChip>
             </TableCell>
             <TableCell class="hidden pr-6 text-muted-foreground numeric lg:table-cell">
               {{ order.date }}

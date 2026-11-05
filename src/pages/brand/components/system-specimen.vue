@@ -44,13 +44,13 @@ onMounted(readTokens)
 watch(mode, () => requestAnimationFrame(readTokens))
 
 const TYPE_SCALE = [
-  { name: 'Hero metric', cls: 'text-[3.75rem] leading-none font-semibold tracking-display', spec: '60 / 1 · 600 · −0,035em', sample: '6.793' },
-  { name: 'Page title', cls: 'text-[1.875rem] leading-9 font-semibold tracking-display', spec: '30 / 36 · 600', sample: 'Ringkasan produksi' },
-  { name: 'Card title', cls: 'text-lg font-semibold tracking-title', spec: '18 / 28 · 600 · −0,025em', sample: 'Stok terhadap kebutuhan minimum' },
+  { name: 'Hero metric', cls: 'text-[2.75rem] leading-[3rem] font-semibold tracking-display', spec: '44 / 48 · 600 · −0,022em', sample: '6.793' },
+  { name: 'Page title', cls: 'text-[1.75rem] leading-[2.1875rem] font-semibold tracking-title', spec: '28 / 35 · 600 · −0,015em', sample: 'Ringkasan produksi' },
+  { name: 'Card title', cls: 'text-lg font-semibold tracking-title', spec: '18 / 28 · 600 · −0,015em', sample: 'Stok terhadap kebutuhan minimum' },
   { name: 'Body', cls: 'text-sm', spec: '14 / 20 · 400', sample: 'Periksa ventilasi dan catatan nekropsi sebelum shift sore.' },
   { name: 'Caption', cls: 'text-xs text-muted-foreground', spec: '12 / 16 · 400', sample: 'Diperbarui 05/11/2026 06.00 WIB' },
   { name: 'Overline', cls: 'eyebrow text-muted-foreground', spec: '11 / 16 · 600 · +0,14em', sample: 'Antrean tindakan' },
-  { name: 'Mono', cls: 'font-mono text-xs', spec: 'JetBrains Mono 12', sample: 'SO-2611-0142' },
+  { name: 'Mono', cls: 'font-mono text-xs', spec: 'ui-monospace 12', sample: 'SO-2611-0142' },
 ]
 
 const RADII = [
@@ -85,7 +85,7 @@ const iconGroups = Object.entries(ICON_GROUPS) as [string, Record<IconName, unkn
               <span class="size-8 shrink-0 rounded-lg ring-1 ring-foreground/10" :style="{ background: `var(${token})` }" />
               <span class="min-w-0">
                 <span class="block truncate font-mono text-[11px]">{{ token.slice(2) }}</span>
-                <span class="block font-mono text-[10px] text-muted-foreground">{{ values[token] ?? '…' }}</span>
+                <span class="block break-all font-mono text-[10px] text-muted-foreground">{{ values[token] ?? '…' }}</span>
               </span>
             </div>
           </div>
@@ -104,7 +104,7 @@ const iconGroups = Object.entries(ICON_GROUPS) as [string, Record<IconName, unkn
             Skala tipe
           </p>
           <CardTitle class="text-lg">
-            Plus Jakarta Sans
+            Inter — mengikuti farm.aapm.co.id
           </CardTitle>
         </CardHeader>
         <CardContent class="grid gap-4">

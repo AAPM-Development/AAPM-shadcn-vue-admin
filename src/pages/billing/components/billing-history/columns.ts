@@ -1,7 +1,8 @@
 import type { DataTableColumnDef } from '@/components/data-table'
 
+import ToneChip from '@/components/aapm/tone/tone-chip.vue'
+import { toneOf } from '@/components/aapm/tone/tones'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { Badge } from '@/components/ui/badge'
 
 import type { Billing } from './data/schema'
 
@@ -34,7 +35,7 @@ export const columns: DataTableColumnDef<Billing>[] = [
   {
     accessorKey: 'plan',
     header: ({ column }) => h(DataTableColumnHeader<Billing>, { column, title: 'billing plan' }),
-    cell: ({ row }) => h('div', { }, row.getValue('plan')),
+    cell: ({ row }) => h(ToneChip, { tone: toneOf('plan', row.getValue('plan')), variant: 'outline', dot: true }, () => row.getValue('plan')),
     enableSorting: false,
     enableHiding: false,
   },
@@ -46,18 +47,7 @@ export const columns: DataTableColumnDef<Billing>[] = [
       if (!status)
         return h('div', { }, row.getValue('status'))
 
-      const style = {
-        color: status.color,
-      }
-
-      return h(Badge, {
-        class: 'flex max-w-[100px] items-center',
-        style,
-        variant: 'secondary',
-      }, () => [
-        status.icon && h(status.icon, { class: 'mr-2 h-4 w-4 text-muted-foreground', style }),
-        h('span', status.label),
-      ])
+      return h(ToneChip, { tone: toneOf('billing', status.value), icon: status.icon }, () => status.label)
     },
     enableSorting: false,
     enableHiding: false,

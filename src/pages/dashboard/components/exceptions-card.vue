@@ -2,6 +2,8 @@
 import type { IconName } from '@/components/aapm/icon/registry'
 
 import AapmIcon from '@/components/aapm/icon/AapmIcon.vue'
+import ToneChip from '@/components/aapm/tone/tone-chip.vue'
+import { toneOf } from '@/components/aapm/tone/tones'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -18,10 +20,10 @@ const ICON: Record<FarmException['icon'], IconName> = {
   production: 'hdp',
 }
 
-const TONE: Record<ExceptionTone, { label: string, icon: IconName, chip: string, tile: string }> = {
-  danger: { label: 'Kritis', icon: 'danger', chip: 'bg-danger-soft text-danger', tile: 'bg-danger-soft text-danger' },
-  warning: { label: 'Perhatian', icon: 'warning', chip: 'bg-warning-soft text-warning', tile: 'bg-warning-soft text-warning' },
-  info: { label: 'Terjadwal', icon: 'pending', chip: 'bg-info-soft text-info', tile: 'bg-info-soft text-info' },
+const TONE: Record<ExceptionTone, { label: string, icon: IconName }> = {
+  danger: { label: 'Kritis', icon: 'danger' },
+  warning: { label: 'Perhatian', icon: 'warning' },
+  info: { label: 'Terjadwal', icon: 'pending' },
 }
 
 const critical = computed(() => exceptions.filter(e => e.tone === 'danger').length)
@@ -38,7 +40,13 @@ const visible = computed(() => (expanded.value ? exceptions : exceptions.slice(0
       :description="`${exceptions.length} item · ${critical} kritis. Diurutkan menurut prioritas, lalu waktu.`"
     />
     <CardContent>
-      <ol class="grid">
+      <TransitionGroup
+        tag="ol" class="grid"
+        enter-active-class="transition-[opacity,transform] duration-300 ease-aapm"
+        enter-from-class="opacity-0 -translate-y-1"
+        leave-active-class="transition-opacity duration-150 ease-aapm"
+        leave-to-class="opacity-0"
+      >
         <li
           v-for="item in visible" :key="item.id"
           class="grid grid-cols-[auto_1fr] gap-3 border-b border-border/70 px-1 py-3 last:border-0"
@@ -46,10 +54,9 @@ const visible = computed(() => (expanded.value ? exceptions : exceptions.slice(0
           <AapmIcon :name="ICON[item.icon]" :size="18" class="mt-0.5 text-muted-foreground" />
           <div class="min-w-0 space-y-1.5">
             <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span class="inline-flex items-center gap-1 rounded-md px-1.5 py-px text-[11px] font-semibold" :class="TONE[item.tone].chip">
-                <AapmIcon :name="TONE[item.tone].icon" :size="12" />
+              <ToneChip :tone="toneOf('severity', item.tone)" :icon="TONE[item.tone].icon">
                 {{ TONE[item.tone].label }}
-              </span>
+              </ToneChip>
               <span class="text-xs text-muted-foreground numeric">{{ item.time }}</span>
             </div>
             <p class="text-sm font-semibold leading-snug">
@@ -63,17 +70,17 @@ const visible = computed(() => (expanded.value ? exceptions : exceptions.slice(0
                 <AapmIcon name="user" :size="13" />
                 <span class="truncate">{{ item.owner }}</span>
               </span>
-              <Button variant="outline" size="sm" class="h-7 px-2.5 text-xs pointer-coarse:h-11">
+              <Button variant="outline" size="sm" class="h-auto min-h-7 max-w-full whitespace-normal px-2.5 py-1 text-left text-xs pointer-coarse:min-h-11">
                 {{ item.action }}
                 <AapmIcon name="chevronRight" :size="14" />
               </Button>
             </div>
           </div>
         </li>
-      </ol>
+      </TransitionGroup>
       <Button
         v-if="exceptions.length > LIMIT"
-        variant="ghost" size="sm" class="mt-1 w-full text-muted-foreground"
+        variant="ghost" size="sm" class="mt-1 h-auto min-h-8 w-full whitespace-normal text-muted-foreground"
         :aria-expanded="expanded"
         @click="expanded = !expanded"
       >

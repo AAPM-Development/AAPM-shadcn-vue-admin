@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import BrandMark from '@/components/aapm/brand-mark.vue'
 import AapmIcon from '@/components/aapm/icon/AapmIcon.vue'
+import ToneChip from '@/components/aapm/tone/tone-chip.vue'
 import { Button } from '@/components/ui/button'
+import brandTokens from '@/design-system/brand/aapm-brand.tokens.json'
 
+/** Values come from the vendored Ecosystem token file (src/design-system/brand), never literals. */
+const { core: brandCore } = brandTokens.brand
 const core = [
-  { name: 'AAPM Green', hex: '#318139', role: 'Aksi utama, fokus, seri data 1' },
-  { name: 'AAPM Orange', hex: '#D4451A', role: 'Aksen hangat, seri data 3' },
-  { name: 'White', hex: '#FFFFFF', role: 'Kanvas & inverse' },
-  { name: 'Dark-logo neutral', hex: '#CCCCCC', role: 'Logo di permukaan gelap' },
+  { name: 'AAPM Green', hex: brandCore.green.$value, role: 'Aksi utama, fokus, seri data 1' },
+  { name: 'AAPM Orange', hex: brandCore.orange.$value, role: 'Aksen hangat, seri data 3' },
+  { name: 'White', hex: brandCore.white.$value, role: 'Kanvas & inverse' },
+  { name: 'Dark-logo neutral', hex: brandCore.neutralDarkVariant.$value, role: 'Logo di permukaan gelap' },
 ]
 const statuses = [
-  { label: 'Draft', icon: 'edit', cls: 'bg-muted text-muted-foreground' },
-  { label: 'Dikirim', icon: 'truck', cls: 'bg-info-soft text-info' },
-  { label: 'Lunas', icon: 'success', cls: 'bg-success-soft text-success' },
-  { label: 'Jatuh tempo', icon: 'warning', cls: 'bg-warning-soft text-warning' },
+  { label: 'Draft', icon: 'edit', tone: 'neutral' },
+  { label: 'Dikirim', icon: 'truck', tone: 'blue' },
+  { label: 'Lunas', icon: 'success', tone: 'green' },
+  { label: 'Jatuh tempo', icon: 'warning', tone: 'amber' },
 ] as const
 const glyphs = ['egg', 'flock', 'feed', 'house', 'mortality', 'vaccine', 'warehouse', 'truck'] as const
 </script>
@@ -106,11 +110,11 @@ const glyphs = ['egg', 'flock', 'feed', 'house', 'mortality', 'vaccine', 'wareho
           </p>
           <div class="space-y-1 pb-2 text-right text-xs text-muted-foreground">
             <p class="text-sm font-semibold text-foreground">
-              Plus Jakarta Sans
+              Inter
             </p>
-            <p>Tokotype, Jakarta · 400–700</p>
+            <p>Sama dengan farm.aapm.co.id · 400–700</p>
             <p class="font-mono">
-              JetBrains Mono · SO-2611-0142
+              ui-monospace · SO-2611-0142
             </p>
           </div>
         </div>
@@ -165,10 +169,9 @@ const glyphs = ['egg', 'flock', 'feed', 'house', 'mortality', 'vaccine', 'wareho
       <article class="flex min-h-60 flex-col gap-5 bg-card p-7">
         <span class="eyebrow text-muted-foreground">09 · Status & aksi</span>
         <div class="flex flex-wrap gap-1.5">
-          <span v-for="s in statuses" :key="s.label" class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold" :class="s.cls">
-            <AapmIcon :name="s.icon" :size="13" />
+          <ToneChip v-for="s in statuses" :key="s.label" :tone="s.tone" :icon="s.icon">
             {{ s.label }}
-          </span>
+          </ToneChip>
         </div>
         <div class="mt-auto flex flex-wrap items-center gap-2">
           <Button size="sm">

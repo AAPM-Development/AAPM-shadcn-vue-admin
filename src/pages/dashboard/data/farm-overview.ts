@@ -42,8 +42,10 @@ export const productionSeries: ProductionPoint[] = Array.from({ length: DAYS }, 
   const date = new Date(REPORT_DATE)
   date.setDate(date.getDate() - (DAYS - 1 - i))
   const standard = round(93.6 - (i / DAYS) * 1.1, 2)
-  // A short heat-stress dip around day 55–61, then recovery.
-  const dip = i >= 55 && i <= 61 ? -2.6 * Math.sin(((i - 55) / 6) * Math.PI) : 0
+  // A short heat-stress dip around day 62–68, then recovery. It sits wholly inside the last
+  // 30 days, so the 30-day views show the complete event instead of a cut-off edge (a dip
+  // sliced by the window edge reads as an unexplained cliff in the KPI sparkline).
+  const dip = i >= 62 && i <= 68 ? -2.6 * Math.sin(((i - 62) / 6) * Math.PI) : 0
   const hdp = round(standard - 0.7 + dip + jitter(0.55), 1)
   const population = 119_820 - Math.round(i * 15.1)
   const eggs = Math.round(population * (hdp / 100))
@@ -166,7 +168,8 @@ export const WEEKS = Array.from({ length: 12 }, (_, i) => `W${34 + i}`)
 /** Weekly mortality, % of house population. values[house][week] */
 export const mortalityGrid: number[][] = HOUSES.map((house, h) => WEEKS.map((_, w) => {
   const base = 0.045 + h * 0.004 + jitter(0.018)
-  const heat = w >= 7 && w <= 8 ? 0.035 : 0
+  // Same heat-stress event as the production dip (days 62–68 ≈ W42–W43).
+  const heat = w >= 8 && w <= 9 ? 0.035 : 0
   const b3 = house === 'Kandang B3' && w >= 9 ? 0.047 * (w - 8) : 0
   return round(Math.max(0.01, base + heat + b3), 3)
 }))

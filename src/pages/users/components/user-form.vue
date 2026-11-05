@@ -2,6 +2,7 @@
 import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 
+import { useBlockedFeedback } from '@/components/aapm/motion/use-blocked-feedback'
 import { Button } from '@/components/ui/button'
 import { FieldError } from '@/components/ui/field'
 import { FormItem } from '@/components/ui/form'
@@ -35,6 +36,9 @@ function getInitialValues(user?: User): UserValidator {
   }
 }
 
+const blockedRoot = useTemplateRef<HTMLElement>('blockedRoot')
+const { submitWith } = useBlockedFeedback(blockedRoot)
+
 const form = useForm({
   defaultValues: getInitialValues(props.user),
   validators: {
@@ -54,6 +58,7 @@ const form = useForm({
     emits('close')
   },
 })
+const submit = submitWith(form)
 
 watch(() => props.user, (user) => {
   form.reset(getInitialValues(user), { keepDefaultValues: true })
@@ -61,8 +66,10 @@ watch(() => props.user, (user) => {
 </script>
 
 <template>
-  <div class="max-h-[500px] overflow-y-auto">
-    <form class="space-y-8" @submit.prevent="form.handleSubmit">
+  <!-- -mx-1/px-1/py-1 leave room for the 3px focus ring inside the scroll area (#287) -->
+  <div ref="blockedRoot" class="-mx-1 max-h-[min(500px,65dvh)] overflow-y-auto px-1 py-1">
+    <!-- Creating a record for someone else: never autofill the operator's own identity -->
+    <form class="space-y-8" autocomplete="off" @submit.prevent="submit">
       <form.Field name="firstName">
         <template #default="{ field, state }">
           <FormItem>

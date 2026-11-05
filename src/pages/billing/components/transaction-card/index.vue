@@ -2,6 +2,7 @@
 import { Icon } from '@iconify/vue'
 import { useClipboard } from '@vueuse/core'
 
+import { toneOf } from '@/components/aapm/tone/tones'
 import FlickeringGrid from '@/components/inspira-ui/flickering-grid.vue'
 
 import type { PayState } from '../billing-history/data/data'
@@ -71,7 +72,7 @@ const currentState = computed(() => {
         color="#60A5FA"
       />
       <div class="step grid grid-cols-[50px_1fr]">
-        <component :is="currentState?.icon" :style="{ color: currentState?.color }" class="size-8" />
+        <component :is="currentState?.icon" :data-tone="toneOf('billing', currentState?.value)" class="size-8 text-(--tone-dot)" />
         <div>
           <h2 class="text-xl">
             {{ currentState?.label }}

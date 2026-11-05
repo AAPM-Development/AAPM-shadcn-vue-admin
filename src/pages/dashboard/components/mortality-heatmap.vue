@@ -18,6 +18,7 @@ const format = (n: number) => `${formatNumber(n, 2)}%`
     />
     <CardContent>
       <Heatmap
+        ramp="bad"
         :rows="HOUSES" :cols="WEEKS" :values="mortalityGrid" :thresholds="MORTALITY_THRESHOLDS"
         :format="format" label="Mortalitas mingguan per kandang, minggu 34 sampai 45"
       />
