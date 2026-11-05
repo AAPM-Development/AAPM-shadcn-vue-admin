@@ -15,9 +15,25 @@ export function linearScale(domain: Range, range: Range): (v: number) => number 
 
 const round = (v: number) => +v.toFixed(2)
 
-function toPoints(values: number[], width: number, height: number, pad: number) {
+/**
+ * Y-domain for sparklines and other small trend marks: min–max plus headroom, and never
+ * narrower than a small share of the level. Day-to-day noise or a single dip then reads
+ * at its real size instead of being stretched into a cliff across the full height.
+ */
+export function sparkDomain(values: number[], { headroom = 0.12, minSpan = 0.02 } = {}): Range {
+  if (!values.length)
+    return [0, 1]
   const min = Math.min(...values)
   const max = Math.max(...values)
+  const level = Math.max(Math.abs(min), Math.abs(max))
+  const span = Math.max(max - min, level * minSpan) || 1
+  const mid = (min + max) / 2
+  const half = (span / 2) * (1 + headroom * 2)
+  return [mid - half, mid + half]
+}
+
+function toPoints(values: number[], width: number, height: number, pad: number, domain?: Range) {
+  const [min, max] = domain ?? [Math.min(...values), Math.max(...values)]
   const y = linearScale([min, max], [height - pad, pad])
   const x = values.length === 1
     ? () => width / 2
@@ -25,10 +41,10 @@ function toPoints(values: number[], width: number, height: number, pad: number) 
   return values.map((v, i) => [round(x(i)), round(y(v))] as const)
 }
 
-export function linePath(values: number[], width: number, height: number, pad = 2): string {
+export function linePath(values: number[], width: number, height: number, pad = 2, domain?: Range): string {
   if (!values.length)
     return ''
-  const points = toPoints(values, width, height, pad)
+  const points = toPoints(values, width, height, pad, domain)
   if (points.length === 1) {
     const [x, y] = points[0]
     return `M${x},${y}L${x},${y}`
@@ -36,10 +52,69 @@ export function linePath(values: number[], width: number, height: number, pad = 
   return points.map(([x, y], i) => `${i ? 'L' : 'M'}${x},${y}`).join('')
 }
 
-export function areaPath(values: number[], width: number, height: number, pad = 2): string {
+/**
+ * Monotone cubic tangents (Fritsch–Carlson): smooth, but never overshoots a data point — peaks and
+ * troughs stay where the data puts them (dataviz direction §4).
+ */
+function monotoneTangents(points: readonly (readonly [number, number])[]): number[] {
+  const n = points.length
+  const d: number[] = []
+  for (let k = 0; k < n - 1; k++) {
+    const dx = points[k + 1]![0] - points[k]![0]
+    d.push(dx === 0 ? 0 : (points[k + 1]![1] - points[k]![1]) / dx)
+  }
+  const m = points.map((_, k) => (k === 0 ? d[0]! : k === n - 1 ? d[n - 2]! : (d[k - 1]! * d[k]! > 0 ? (d[k - 1]! + d[k]!) / 2 : 0)))
+  for (let k = 0; k < n - 1; k++) {
+    if (d[k] === 0) {
+      m[k] = 0
+      m[k + 1] = 0
+      continue
+    }
+    const a = m[k]! / d[k]!
+    const b = m[k + 1]! / d[k]!
+    const s = a * a + b * b
+    if (s > 9) {
+      const t = 3 / Math.sqrt(s)
+      m[k] = t * a * d[k]!
+      m[k + 1] = t * b * d[k]!
+    }
+  }
+  return m
+}
+
+function smoothSegments(points: readonly (readonly [number, number])[]): string {
+  const m = monotoneTangents(points)
+  let out = `M${points[0]![0]},${points[0]![1]}`
+  for (let k = 0; k < points.length - 1; k++) {
+    const [x0, y0] = points[k]!
+    const [x1, y1] = points[k + 1]!
+    const h = (x1 - x0) / 3
+    out += `C${round(x0 + h)},${round(y0 + m[k]! * h)},${round(x1 - h)},${round(y1 - m[k + 1]! * h)},${x1},${y1}`
+  }
+  return out
+}
+
+/** Smooth (monotone cubic) version of {@link linePath}; same point placement. */
+export function smoothLinePath(values: number[], width: number, height: number, pad = 2, domain?: Range): string {
+  if (values.length < 3)
+    return linePath(values, width, height, pad, domain)
+  return smoothSegments(toPoints(values, width, height, pad, domain))
+}
+
+/** Smooth (monotone cubic) version of {@link areaPath}, closed down to the baseline. */
+export function smoothAreaPath(values: number[], width: number, height: number, pad = 2, domain?: Range): string {
+  if (values.length < 3)
+    return areaPath(values, width, height, pad, domain)
+  const points = toPoints(values, width, height, pad, domain)
+  const first = points[0]!
+  const last = points[points.length - 1]!
+  return `${smoothSegments(points)}L${last[0]},${height}L${first[0]},${height}Z`
+}
+
+export function areaPath(values: number[], width: number, height: number, pad = 2, domain?: Range): string {
   if (!values.length)
     return ''
-  const points = toPoints(values, width, height, pad)
+  const points = toPoints(values, width, height, pad, domain)
   const first = points[0]
   const last = points[points.length - 1]
   const line = points.map(([x, y], i) => `${i ? 'L' : 'M'}${x},${y}`).join('')

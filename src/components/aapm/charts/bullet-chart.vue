@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { Motion } from 'motion-v'
+
 import AapmIcon from '@/components/aapm/icon/AapmIcon.vue'
+import { AAPM_EASE } from '@/components/aapm/motion/easing'
 import { formatNumber } from '@/lib/format-id'
+
+import { useChartInView } from './use-chart-inview'
 
 const props = withDefaults(defineProps<{
   label: string
@@ -29,11 +34,13 @@ const state = computed(() => {
     return { tone: 'warning', label: 'Menipis', icon: 'warning' } as const
   return { tone: 'success', label: 'Aman', icon: 'success' } as const
 })
+const root = useTemplateRef<HTMLElement>('root')
+const inView = useChartInView(root)
 const summary = computed(() => `${props.label}: ${props.format(props.actual)} ${props.unit} dari target ${props.format(props.target)} ${props.unit}, status ${state.value.label}`)
 </script>
 
 <template>
-  <div class="grid gap-2" role="img" :aria-label="summary">
+  <div ref="root" class="grid gap-2" role="img" :aria-label="summary">
     <div class="flex items-baseline justify-between gap-3">
       <div class="min-w-0">
         <p class="truncate text-sm font-medium">
@@ -54,16 +61,20 @@ const summary = computed(() => `${props.label}: ${props.format(props.actual)} ${
         <div class="absolute inset-y-0 left-0 bg-foreground/[0.05]" :style="{ width: pct(target * thresholds[1]) }" />
         <div class="absolute inset-y-0 left-0 bg-foreground/[0.05]" :style="{ width: pct(target * thresholds[0]) }" />
       </div>
-      <div
-        class="absolute inset-y-1 left-0 rounded-full transition-[width] duration-500 ease-emphasis"
+      <Motion
+        data-aapm-bar
+        class="absolute inset-y-1 left-0 origin-left rounded-full"
+        :initial="{ scaleX: inView ? 1 : 0 }" :animate="{ scaleX: inView ? 1 : 0 }"
+        :transition="{ duration: 0.7, ease: AAPM_EASE.emphasis }"
         :class="{
-          'bg-chart-1': state.tone === 'success',
+          'bg-success-fill': state.tone === 'success',
           'bg-warning-fill': state.tone === 'warning',
           'bg-danger-fill': state.tone === 'danger',
         }"
         :style="{ width: pct(actual) }"
       />
       <div
+        data-aapm-marker
         class="absolute inset-y-0 w-0.5 -translate-x-1/2 rounded-full bg-chart-target"
         :style="{ left: pct(target) }"
         aria-hidden="true"

@@ -5,6 +5,13 @@ export interface LegendItem {
   shape?: 'line' | 'dash' | 'dot'
 }
 
+export interface SmallMultipleSeries {
+  id: string
+  label: string
+  values: (number | null)[]
+  color?: string
+}
+
 export interface DonutItem {
   label: string
   value: number

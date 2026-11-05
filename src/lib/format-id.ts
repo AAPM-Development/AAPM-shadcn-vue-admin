@@ -64,3 +64,33 @@ export function formatSigned(n: number, digits = 1, suffix = '%'): string {
   const sign = isZero ? '' : n > 0 ? '+' : '−'
   return `${sign}${body}${suffix}`
 }
+
+const RELATIVE_ID = new Intl.RelativeTimeFormat('id-ID', { numeric: 'auto' })
+
+/**
+ * "12 menit yang lalu", "3 jam yang lalu", "kemarin", "kemarin dulu". Anything under a minute
+ * old, in the future (clock skew between device and server) or unknown reads "baru saja": a
+ * freshness label must never claim data from the future. From 24 hours on, days count by
+ * calendar date (47 hours ago at 08:00 is "kemarin dulu", not "kemarin"), and about a year reads
+ * as a year rather than "12 bulan".
+ */
+export function formatRelativeId(since: Date | number | undefined, now: Date | number = Date.now()): string {
+  const then = since instanceof Date ? since.getTime() : since
+  const at = now instanceof Date ? now.getTime() : now
+  const diff = at - (then ?? Number.NaN)
+  if (!Number.isFinite(diff) || diff < 60_000)
+    return 'baru saja'
+  const minutes = Math.floor(diff / 60_000)
+  if (minutes < 60)
+    return RELATIVE_ID.format(-minutes, 'minute')
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24)
+    return RELATIVE_ID.format(-hours, 'hour')
+  const midnight = (t: number) => new Date(t).setHours(0, 0, 0, 0)
+  const days = Math.max(1, Math.round((midnight(at) - midnight(then!)) / 86_400_000))
+  if (days < 30)
+    return RELATIVE_ID.format(-days, 'day')
+  if (days < 360)
+    return RELATIVE_ID.format(-Math.floor(days / 30), 'month')
+  return RELATIVE_ID.format(-Math.max(1, Math.round(days / 365)), 'year')
+}

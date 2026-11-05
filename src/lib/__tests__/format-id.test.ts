@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatCompact, formatNumber, formatPercent, formatRupiah, formatSigned } from '../format-id'
+import { formatCompact, formatNumber, formatPercent, formatRelativeId, formatRupiah, formatSigned } from '../format-id'
 
 describe('formatNumber', () => {
   it('uses period thousands separators', () => {
@@ -69,5 +69,31 @@ describe('formatSigned', () => {
 
   it('accepts a custom suffix', () => {
     expect(formatSigned(-0.04, 2, ' pt')).toBe('−0,04 pt')
+  })
+})
+
+describe('formatRelativeId', () => {
+  const now = new Date('2026-11-05T10:00:00+07:00')
+  it('relative time never reads as the future', () => {
+    expect(formatRelativeId(new Date(now.getTime() - 12 * 60_000), now)).toBe('12 menit yang lalu')
+    expect(formatRelativeId(new Date(now.getTime() - 3 * 3_600_000), now)).toBe('3 jam yang lalu')
+    expect(formatRelativeId(new Date(now.getTime() - 86_400_000), now)).toBe('kemarin')
+    expect(formatRelativeId(new Date(now.getTime() + 120_000), now)).toBe('baru saja')
+    expect(formatRelativeId(new Date(now.getTime() - 20_000), now)).toBe('baru saja')
+    expect(formatRelativeId(undefined, now)).toBe('baru saja')
+    expect(formatRelativeId(Number.NaN, now)).toBe('baru saja')
+  })
+})
+
+describe('formatRelativeId · calendar days', () => {
+  const now = new Date('2026-11-05T08:00:00+07:00')
+  it('counts days by calendar date, not by 24-hour blocks', () => {
+    expect(formatRelativeId(new Date('2026-11-04T20:00:00+07:00'), now)).toBe('12 jam yang lalu')
+    expect(formatRelativeId(new Date('2026-11-04T07:00:00+07:00'), now)).toBe('kemarin')
+    expect(formatRelativeId(new Date('2026-11-03T09:00:00+07:00'), now)).toBe('kemarin dulu')
+  })
+  it('reads a year once it is about a year', () => {
+    expect(formatRelativeId(new Date(now.getTime() - 362 * 86_400_000), now)).toBe('tahun lalu')
+    expect(formatRelativeId(new Date(now.getTime() - 3 * 365 * 86_400_000), now)).toBe('3 tahun yang lalu')
   })
 })

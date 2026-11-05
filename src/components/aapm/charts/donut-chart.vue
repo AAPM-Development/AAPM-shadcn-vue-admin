@@ -4,6 +4,8 @@ import { formatNumber, formatPercent } from '@/lib/format-id'
 
 import type { DonutItem } from './types'
 
+import { useChartInView } from './use-chart-inview'
+
 const props = withDefaults(defineProps<{
   items: DonutItem[]
   centerLabel: string
@@ -29,28 +31,42 @@ const total = computed(() => props.items.reduce((sum, i) => sum + Math.max(0, i.
 const active = shallowRef<number | null>(null)
 const focused = computed(() => active.value === null ? null : props.items[active.value])
 const share = (v: number) => total.value ? (v / total.value) * 100 : 0
-const summary = computed(() => `${props.centerLabel}: ${props.items.map(i => `${i.label} ${formatPercent(share(i.value))}`).join(', ')}`)
+const root = useTemplateRef<HTMLElement>('root')
+useChartInView(root)
+/** Sweep mask: one stroke around the ring, drawn from 12 o'clock (assets/motion/charts.css). */
+const maskId = `aapm-donut-${useId()}`
+const ring = computed(() => ({ r: radius.value - props.thickness / 2, c: 2 * Math.PI * (radius.value - props.thickness / 2) }))
+const summary = computed(() => `${props.centerLabel}: ${props.format(total.value)} ${props.unit}. ${props.items.map(i => `${i.label} ${formatPercent(share(i.value))}`).join(', ')}`)
 </script>
 
 <template>
   <div class="@container w-full">
     <div class="flex flex-col items-center gap-5 @[27rem]:flex-row">
-      <div class="relative shrink-0" :style="{ width: `${size}px`, height: `${size}px` }">
+      <div ref="root" class="relative shrink-0" :style="{ width: `${size}px`, height: `${size}px` }">
         <svg :width="size" :height="size" role="img" :aria-label="summary">
           <circle
             v-if="!arcs.length" :cx="radius" :cy="radius" :r="radius - thickness / 2"
             fill="none" stroke="var(--seq-0)" :stroke-width="thickness"
           />
-          <path
-            v-for="arc in arcs" :key="arc.index" :d="arc.d" :fill="items[arc.index].color" fill-rule="evenodd"
-            class="cursor-pointer transition-opacity duration-200 ease-aapm"
-            :opacity="active === null || active === arc.index ? 1 : 0.3"
-            @pointerenter="active = arc.index" @pointerleave="active = null"
-          />
+          <mask :id="maskId">
+            <circle
+              data-aapm-sweep-ring :cx="radius" :cy="radius" :r="ring.r" fill="none" stroke="white"
+              :stroke-width="thickness + 4" :stroke-dasharray="ring.c" :style="{ '--aapm-ring': `${ring.c}px` }"
+              :transform="`rotate(-90 ${radius} ${radius})`"
+            />
+          </mask>
+          <g :mask="`url(#${maskId})`">
+            <path
+              v-for="arc in arcs" :key="arc.index" data-aapm-tween data-aapm-arc :d="arc.d" :fill="items[arc.index].color" fill-rule="evenodd"
+              class="cursor-pointer"
+              :style="{ opacity: active === null || active === arc.index ? 1 : 'var(--chart-dim)', scale: active === arc.index ? 1.06 : 1 }"
+              @pointerenter="active = arc.index" @pointerleave="active = null"
+            />
+          </g>
         </svg>
         <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
           <span class="eyebrow max-w-[70%] truncate text-muted-foreground">{{ focused ? focused.label : centerLabel }}</span>
-          <span class="text-2xl font-semibold tracking-title">
+          <span class="max-w-[80%] truncate text-2xl font-semibold tracking-title" :title="focused ? formatPercent(share(focused.value)) : format(total)">
             {{ focused ? formatPercent(share(focused.value)) : format(total) }}
           </span>
           <span class="text-xs text-muted-foreground numeric">

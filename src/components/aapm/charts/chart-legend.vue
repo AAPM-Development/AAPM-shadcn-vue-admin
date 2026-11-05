@@ -9,6 +9,8 @@ const props = defineProps<{
 
 /** Labels of hidden series (v-model:hidden). */
 const hidden = defineModel<string[]>('hidden', { default: () => [] })
+/** Label of the key under the pointer / keyboard focus (v-model:focused) — the chart spotlights it. */
+const focused = defineModel<string | null>('focused', { default: null })
 
 function toggle(label: string) {
   if (!props.toggleable)
@@ -35,6 +37,8 @@ function toggle(label: string) {
           hidden.includes(item.label) ? 'opacity-45' : '',
         ]"
         @click="toggle(item.label)"
+        @pointerenter="focused = item.label" @pointerleave="focused = null"
+        @focus="focused = item.label" @blur="focused = null"
       >
         <svg v-if="item.shape === 'line' || item.shape === 'dash'" width="16" height="8" aria-hidden="true">
           <line

@@ -1,6 +1,45 @@
 import { describe, expect, it } from 'vitest'
 
-import { areaPath, bucket, donutArcs, linearScale, linePath, niceTicks } from '../chart-geometry'
+import { areaPath, bucket, donutArcs, linearScale, linePath, niceTicks, smoothAreaPath, smoothLinePath, sparkDomain } from '../chart-geometry'
+
+describe('sparkDomain', () => {
+  // 30 days of production (kg) whose first day sits at the tail of a dip: the worst case for a cliff.
+  const eggsKg = [6679, 6849, 6775, 6841, 6782, 6841, 6782, 6819, 6833, 6781, 6803, 6811, 6781, 6810, 6795, 6773, 6832, 6802, 6824, 6765, 6824, 6802, 6831, 6779, 6779, 6764, 6779, 6786, 6816, 6793]
+
+  it('keeps headroom, so no point touches the top or bottom edge', () => {
+    const [lo, hi] = sparkDomain(eggsKg)
+    expect(lo).toBeLessThan(Math.min(...eggsKg))
+    expect(hi).toBeGreaterThan(Math.max(...eggsKg))
+  })
+
+  it('gives small day-to-day noise a calm amplitude instead of the full height', () => {
+    const flatish = [91.8, 92.1, 91.9, 92.0, 91.7, 92.2]
+    const [lo, hi] = sparkDomain(flatish)
+    const used = (Math.max(...flatish) - Math.min(...flatish)) / (hi - lo)
+    expect(used).toBeLessThan(0.5)
+  })
+
+  it('still uses most of the height for a real trend', () => {
+    const rising = [28, 31, 30, 34, 33, 36, 35, 38, 37, 40, 41, 39, 43, 45]
+    const [lo, hi] = sparkDomain(rising)
+    expect((45 - 28) / (hi - lo)).toBeGreaterThan(0.75)
+  })
+
+  it('is total for empty, single and flat input', () => {
+    for (const v of [[], [5], [0, 0, 0], [7, 7]]) {
+      const [lo, hi] = sparkDomain(v)
+      expect(Number.isFinite(lo) && Number.isFinite(hi) && hi > lo).toBe(true)
+    }
+  })
+
+  it('places points inside the plot when the paths use the domain', () => {
+    const d = smoothLinePath(eggsKg, 200, 40, 4, sparkDomain(eggsKg))
+    // Path numbers alternate x, y (M x,y C x,y,x,y,x,y …): keep every second one.
+    const ys = [...d.matchAll(/-?\d+(?:\.\d+)?/g)].map(m => Number(m[0])).filter((_, i) => i % 2 === 1)
+    expect(Math.min(...ys)).toBeGreaterThan(4)
+    expect(Math.max(...ys)).toBeLessThan(36)
+  })
+})
 
 describe('linearScale', () => {
   it('maps the domain onto the range', () => {
@@ -95,5 +134,31 @@ describe('bucket', () => {
 
   it('caps at the number of thresholds', () => {
     expect(bucket(9, [1, 3, 5])).toBe(3)
+  })
+})
+
+describe('smooth paths (monotone cubic)', () => {
+  const values = [1, 3, 2, 5, 4]
+  it('passes through every data point that linePath uses', () => {
+    const straight = linePath(values, 100, 40, 2)
+    const smooth = smoothLinePath(values, 100, 40, 2)
+    const pts = [...straight.matchAll(/[ML]([\d.]+),([\d.]+)/g)].map(m => `${m[1]},${m[2]}`)
+    for (const p of pts)
+      expect(smooth).toContain(p)
+    expect(smooth.match(/C/g)).toHaveLength(values.length - 1)
+  })
+
+  it('never overshoots: control points stay inside the y-range of their segment', () => {
+    const smooth = smoothLinePath([0, 10, 10, 0, 5], 100, 40, 2)
+    const ys = [...smooth.matchAll(/C[\d.]+,([\d.-]+),[\d.]+,([\d.-]+),[\d.]+,([\d.-]+)/g)].flatMap(m => [Number(m[1]), Number(m[2])])
+    for (const y of ys) {
+      expect(y).toBeGreaterThanOrEqual(2)
+      expect(y).toBeLessThanOrEqual(38)
+    }
+  })
+
+  it('closes the area to the baseline and falls back for short series', () => {
+    expect(smoothAreaPath(values, 100, 40, 2)).toMatch(/L98,40L2,40Z$/)
+    expect(smoothLinePath([1, 2], 100, 40, 2)).toBe(linePath([1, 2], 100, 40, 2))
   })
 })
