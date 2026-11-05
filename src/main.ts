@@ -3,6 +3,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { setupPlugins } from './plugins'
 
+import '@fontsource-variable/plus-jakarta-sans'
+import '@fontsource-variable/jetbrains-mono'
+
 import '@/assets/index.css'
 import '@/assets/scrollbar.css'
 import '@/assets/themes.css'

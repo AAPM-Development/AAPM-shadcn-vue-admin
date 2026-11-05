@@ -1,0 +1,66 @@
+/**
+ * Indonesian (id-ID) number formatting for AAPM screens.
+ * Period thousands, comma decimals: `12.450 kg`, `92,4%`, `Rp 482.650.000`, `Rp 1,2 M`.
+ */
+
+const formatters = new Map<string, Intl.NumberFormat>()
+
+function getFormatter(minDigits: number, maxDigits: number) {
+  const key = `${minDigits}-${maxDigits}`
+  let formatter = formatters.get(key)
+  if (!formatter) {
+    formatter = new Intl.NumberFormat('id-ID', {
+      minimumFractionDigits: minDigits,
+      maximumFractionDigits: maxDigits,
+    })
+    formatters.set(key, formatter)
+  }
+  return formatter
+}
+
+/** Intl emits non-breaking spaces and, in some engines, U+2212 — normalize both. */
+function normalize(value: string) {
+  return value.replace(/[\xA0\u202F]/g, ' ').replace(/−/g, '-')
+}
+
+export function formatNumber(n: number, digits = 0): string {
+  return normalize(getFormatter(digits, digits).format(n))
+}
+
+/** `n` is already in percent units: `formatPercent(92.4)` → `92,4%`. */
+export function formatPercent(n: number, digits = 1): string {
+  return `${formatNumber(n, digits)}%`
+}
+
+const COMPACT_UNITS = [
+  { size: 1e12, suffix: 'T' },
+  { size: 1e9, suffix: 'M' },
+  { size: 1e6, suffix: 'jt' },
+  { size: 1e3, suffix: 'rb' },
+] as const
+
+/** Compact Indonesian magnitude: `12,5 rb`, `1,3 jt`, `1,2 M`. One decimal, trailing zero dropped. */
+export function formatCompact(n: number): string {
+  const abs = Math.abs(n)
+  const unit = COMPACT_UNITS.find(u => abs >= u.size)
+  if (!unit)
+    return formatNumber(Math.round(n))
+  // Divide by a tenth of the unit first so integer inputs round exactly (12450 → 124.5 → 125).
+  const tenths = Math.sign(n) * Math.round(abs / (unit.size / 10))
+  return `${normalize(getFormatter(0, 1).format(tenths / 10))} ${unit.suffix}`
+}
+
+export function formatRupiah(n: number, opts: { compact?: boolean } = {}): string {
+  const sign = n < 0 ? '-' : ''
+  const abs = Math.abs(n)
+  const body = opts.compact ? formatCompact(abs) : formatNumber(Math.round(abs))
+  return `${sign}Rp ${body}`
+}
+
+/** Signed delta with a true minus sign: `+3,2%`, `−1,3%`, `0,0%`. */
+export function formatSigned(n: number, digits = 1, suffix = '%'): string {
+  const body = formatNumber(Math.abs(n), digits)
+  const isZero = /^[0.,]+$/.test(body)
+  const sign = isZero ? '' : n > 0 ? '+' : '−'
+  return `${sign}${body}${suffix}`
+}

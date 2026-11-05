@@ -120,6 +120,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/brand/': RouteRecordInfo<
+      '/brand/',
+      '/brand',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/dashboard/': RouteRecordInfo<
       '/dashboard/',
       '/dashboard',
@@ -336,6 +343,14 @@ declare module 'vue-router/auto-routes' {
     'src/pages/billing/index.vue': {
       routes:
         | '/billing/'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/brand/index.vue': {
+      routes:
+        | '/brand/'
       views:
         | never
       pathParamNames:

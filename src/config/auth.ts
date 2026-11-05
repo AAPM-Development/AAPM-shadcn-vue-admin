@@ -1,4 +1,4 @@
 export const AUTH_CONFIG = {
   otpPrefix: 'S',
-  title: 'Shadcn Vue Admin',
+  title: 'AAPM Admin',
 } as const

@@ -1,71 +1,72 @@
-import { BadgeHelpIcon, BellDotIcon, BirdIcon, BoxesIcon, BugIcon, ComponentIcon, CreditCardIcon, LayoutDashboardIcon, ListTodoIcon, PaletteIcon, PictureInPicture2Icon, PodcastIcon, SettingsIcon, SquareUserRoundIcon, UserIcon, UsersIcon, WrenchIcon } from '@lucide/vue'
-
 import type { NavGroup, NavItem } from '@/components/app-sidebar/types'
+
+import { ICONS } from '@/components/aapm/icon/registry'
 
 type SidebarLink = Extract<NavItem, { url: string }>
 
 export const settingsNavItems: SidebarLink[] = [
-  { title: 'Profile', url: '/settings/', icon: UserIcon },
-  { title: 'Account', url: '/settings/account', icon: WrenchIcon },
-  { title: 'Appearance', url: '/settings/appearance', icon: PaletteIcon },
-  { title: 'Notifications', url: '/settings/notifications', icon: BellDotIcon },
-  { title: 'Display', url: '/settings/display', icon: PictureInPicture2Icon },
+  { title: 'Profil', url: '/settings/', icon: ICONS.profile },
+  { title: 'Akun', url: '/settings/account', icon: ICONS.account },
+  { title: 'Tampilan', url: '/settings/appearance', icon: ICONS.appearance },
+  { title: 'Notifikasi', url: '/settings/notifications', icon: ICONS.notification },
+  { title: 'Layar', url: '/settings/display', icon: ICONS.display },
 ]
 
 export const navData: NavGroup[] = [
   {
-    title: 'General',
+    title: 'Operasional',
     items: [
-      { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboardIcon },
-      { title: 'Tasks', url: '/tasks', icon: ListTodoIcon },
-      { title: 'Apps', url: '/apps', icon: BoxesIcon },
-      { title: 'Users', url: '/users', icon: UsersIcon },
-      { title: 'Ai Talk Example', url: '/ai-talk', icon: PodcastIcon },
+      { title: 'Ringkasan farm', url: '/dashboard', icon: ICONS.dashboard },
+      { title: 'Tugas', url: '/tasks', icon: ICONS.tasks },
+      { title: 'Aplikasi', url: '/apps', icon: ICONS.apps },
+      { title: 'Pengguna', url: '/users', icon: ICONS.users },
+      { title: 'Asisten AI', url: '/ai-talk', icon: ICONS.ai },
     ],
   },
   {
-    title: 'Pages',
+    title: 'Halaman',
     items: [
       {
-        title: 'Auth',
-        icon: SquareUserRoundIcon,
+        title: 'Autentikasi',
+        icon: ICONS.auth,
         items: [
-          { title: 'Sign In', url: '/auth/sign-in' },
-          { title: 'Sign In(2 Col)', url: '/auth/sign-in-2' },
-          { title: 'Sign Up', url: '/auth/sign-up' },
-          { title: 'Forgot Password', url: '/auth/forgot-password' },
+          { title: 'Masuk', url: '/auth/sign-in' },
+          { title: 'Masuk (2 kolom)', url: '/auth/sign-in-2' },
+          { title: 'Daftar', url: '/auth/sign-up' },
+          { title: 'Lupa kata sandi', url: '/auth/forgot-password' },
           { title: 'OTP', url: '/auth/otp' },
         ],
       },
       {
-        title: 'Errors',
-        icon: BugIcon,
+        title: 'Halaman galat',
+        icon: ICONS.errors,
         items: [
-          { title: '401 | Unauthorized', url: '/errors/401' },
-          { title: '403 | Forbidden', url: '/errors/403' },
-          { title: '404 | Not Found', url: '/errors/404' },
-          { title: '500 | Internal Server Error', url: '/errors/500' },
-          { title: '503 | Maintenance Error', url: '/errors/503' },
+          { title: '401 · Tidak berwenang', url: '/errors/401' },
+          { title: '403 · Akses ditolak', url: '/errors/403' },
+          { title: '404 · Tidak ditemukan', url: '/errors/404' },
+          { title: '500 · Galat server', url: '/errors/500' },
+          { title: '503 · Pemeliharaan', url: '/errors/503' },
         ],
       },
     ],
   },
   {
-    title: 'Other',
+    title: 'Sistem',
     items: [
-      { title: 'Settings', items: settingsNavItems, icon: SettingsIcon },
-      { title: 'Prop Components', url: '/prop-components', icon: ComponentIcon },
-      { title: 'Help Center', url: '/help-center', icon: BadgeHelpIcon },
-      { title: 'Outside Page(GitHub)', url: 'https://www.github.com/Whbbit1999/shadcn-vue-admin', icon: BirdIcon },
+      { title: 'Brand & design system', url: '/brand', icon: ICONS.brand },
+      { title: 'Pengaturan', items: settingsNavItems, icon: ICONS.settings },
+      { title: 'Komponen', url: '/prop-components', icon: ICONS.components },
+      { title: 'Pusat bantuan', url: '/help-center', icon: ICONS.help },
+      { title: 'Repositori sumber', url: 'https://github.com/AAPM-Development/AAPM-shadcn-vue-admin', icon: ICONS.external },
     ],
   },
 ]
 
 export const otherPages: NavGroup[] = [
   {
-    title: 'Other',
+    title: 'Lainnya',
     items: [
-      { title: 'Plans & Pricing', icon: CreditCardIcon, url: '/billing' },
+      { title: 'Paket & harga', icon: ICONS.billing, url: '/billing' },
     ],
   },
 ]

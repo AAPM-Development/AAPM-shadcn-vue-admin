@@ -34,3 +34,4 @@ coverage
 .env.development
 .env.test
 .env.production
+.superpowers/

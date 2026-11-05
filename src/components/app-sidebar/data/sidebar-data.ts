@@ -1,31 +1,18 @@
-import { AudioWaveformIcon, CommandIcon, GalleryVerticalEndIcon } from '@lucide/vue'
-
 import { navData } from '@/constants/sidebar-data'
 
 import type { SidebarData, Team, User } from '../types'
 
 const user: User = {
-  name: 'shadcn',
-  email: 'm@example.com',
-  avatar: '/avatars/shadcn.jpg',
+  name: 'Rahmat Hidayat',
+  email: 'rahmat.hidayat@aapm.co.id',
+  avatar: '',
 }
 
+/** Company + active site. UX-03: the active company and branch stay visible at all times. */
 const teams: Team[] = [
-  {
-    name: 'Acme Inc',
-    logo: GalleryVerticalEndIcon,
-    plan: 'Enterprise',
-  },
-  {
-    name: 'Acme Corp.',
-    logo: AudioWaveformIcon,
-    plan: 'Startup',
-  },
-  {
-    name: 'Evil Corp.',
-    logo: CommandIcon,
-    plan: 'Free',
-  },
+  { name: 'PT Agung Abadi Putra Mandiri', plan: 'Farm Payakumbuh' },
+  { name: 'PT AAPM — Unit Pakan', plan: 'Mixing & gudang pakan' },
+  { name: 'AAPM Academy', plan: 'Pelatihan' },
 ]
 
 export const sidebarData: SidebarData = {

@@ -25,9 +25,9 @@ const { isMobile } = useSidebar()
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <Avatar class="size-8 rounded-lg">
-              <AvatarImage :src="user.avatar" :alt="user.name" />
-              <AvatarFallback class="rounded-lg">
-                CN
+              <AvatarImage v-if="user.avatar" :src="user.avatar" :alt="user.name" />
+              <AvatarFallback class="rounded-lg font-semibold">
+                {{ user.name.split(' ').map(part => part[0]).join('').slice(0, 2) }}
               </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-sm leading-tight text-left">
@@ -46,7 +46,7 @@ const { isMobile } = useSidebar()
           <DropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar class="size-8 rounded-lg">
-                <AvatarImage :src="user.avatar" :alt="user.name" />
+                <AvatarImage v-if="user.avatar" :src="user.avatar" :alt="user.name" />
                 <AvatarFallback class="rounded-lg">
                   CN
                 </AvatarFallback>
@@ -62,7 +62,7 @@ const { isMobile } = useSidebar()
           <DropdownMenuGroup>
             <DropdownMenuItem @click="$router.push('/billing/')">
               <SparklesIcon />
-              Upgrade to Pro
+              Tingkatkan paket
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
@@ -70,7 +70,7 @@ const { isMobile } = useSidebar()
           <DropdownMenuGroup>
             <DropdownMenuItem @click="$router.push('/billing?type=billing')">
               <CreditCardIcon />
-              Billing
+              Tagihan
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
@@ -78,15 +78,15 @@ const { isMobile } = useSidebar()
           <DropdownMenuGroup>
             <DropdownMenuItem @click="$router.push('/settings/')">
               <UserRoundCogIcon />
-              Profile
+              Profil
             </DropdownMenuItem>
             <DropdownMenuItem @click="$router.push('/settings/account')">
               <BadgeCheckIcon />
-              Account
+              Akun
             </DropdownMenuItem>
             <DropdownMenuItem @click="$router.push('/settings/notifications')">
               <BellIcon />
-              Notifications
+              Notifikasi
             </DropdownMenuItem>
           </DropdownMenuGroup>
 

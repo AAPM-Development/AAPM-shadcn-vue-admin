@@ -1,137 +1,65 @@
 <script setup lang="ts">
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { heroKpi, kpis } from '../data/farm-overview'
+import EggGradeCard from './egg-grade-card.vue'
+import ExceptionsCard from './exceptions-card.vue'
+import FeedStockCard from './feed-stock-card.vue'
+import HouseRanking from './house-ranking.vue'
+import KpiCard from './kpi-card.vue'
+import MortalityHeatmap from './mortality-heatmap.vue'
+import ProductionTrend from './production-trend.vue'
+import RecentOrders from './recent-orders.vue'
 
-import OverviewChart from './overview-chart.vue'
-import RecentSales from './recent-sales.vue'
+/** Rows enter one after another; reduced motion removes the animation globally. */
+const rise = (index: number) => ({ '--rise-index': index })
 </script>
 
 <template>
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-    <Card>
-      <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">
-          Total Revenue
-        </CardTitle>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          class="size-4 text-muted-foreground"
-        >
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-      </CardHeader>
-      <CardContent>
-        <div class="text-2xl font-bold">
-          $45,231.89
+  <div class="grid grid-cols-1 gap-4 lg:gap-5">
+    <!-- 1 · Hero + 2×2 KPI bento -->
+    <section aria-label="Indikator utama" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+      <div class="animate-rise rise-stagger lg:col-span-5" :style="rise(0)">
+        <KpiCard :kpi="heroKpi" hero />
+      </div>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-7 lg:gap-5">
+        <div v-for="(kpi, i) in kpis" :key="kpi.key" class="animate-rise rise-stagger" :style="rise(i + 1)">
+          <KpiCard :kpi="kpi" />
         </div>
-        <p class="text-xs text-muted-foreground">
-          +20.1% from last month
-        </p>
-      </CardContent>
-    </Card>
-    <Card>
-      <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">
-          Subscriptions
-        </CardTitle>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          class="size-4 text-muted-foreground"
-        >
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      </CardHeader>
-      <CardContent>
-        <div class="text-2xl font-bold">
-          +2350
-        </div>
-        <p class="text-xs text-muted-foreground">
-          +180.1% from last month
-        </p>
-      </CardContent>
-    </Card>
-    <Card>
-      <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">
-          Sales
-        </CardTitle>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          class="size-4 text-muted-foreground"
-        >
-          <rect width="20" height="14" x="2" y="5" rx="2" />
-          <path d="M2 10h20" />
-        </svg>
-      </CardHeader>
-      <CardContent>
-        <div class="text-2xl font-bold">
-          +12,234
-        </div>
-        <p class="text-xs text-muted-foreground">
-          +19% from last month
-        </p>
-      </CardContent>
-    </Card>
-    <Card>
-      <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">
-          Active Now
-        </CardTitle>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          class="size-4 text-muted-foreground"
-        >
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-        </svg>
-      </CardHeader>
-      <CardContent>
-        <div class="text-2xl font-bold">
-          +573
-        </div>
-        <p class="text-xs text-muted-foreground">
-          +201 since last hour
-        </p>
-      </CardContent>
-    </Card>
-  </div>
+      </div>
+    </section>
 
-  <div class="grid grid-cols-1 gap-4 lg:grid-cols-7">
-    <OverviewChart class="col-span-1 lg:col-span-4" />
-    <Card class="col-span-1 lg:col-span-3">
-      <CardHeader>
-        <CardTitle>Recent Sales</CardTitle>
-        <CardDescription>
-          You made 265 sales this month.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <RecentSales />
-      </CardContent>
-    </Card>
+    <!-- 2 · Actionable queue first (UX-09), then the production trend -->
+    <section aria-label="Produksi dan tindakan" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+      <div class="animate-rise rise-stagger lg:col-span-8" :style="rise(3)">
+        <ProductionTrend />
+      </div>
+      <div class="animate-rise rise-stagger lg:col-span-4" :style="rise(4)">
+        <ExceptionsCard />
+      </div>
+    </section>
+
+    <!-- 3 · Health and grading -->
+    <section aria-label="Kesehatan flock dan grading" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+      <div class="animate-rise rise-stagger lg:col-span-7" :style="rise(5)">
+        <MortalityHeatmap />
+      </div>
+      <div class="animate-rise rise-stagger lg:col-span-5" :style="rise(6)">
+        <EggGradeCard />
+      </div>
+    </section>
+
+    <!-- 4 · Inputs and output -->
+    <section aria-label="Pakan dan output kandang" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+      <div class="animate-rise rise-stagger lg:col-span-5" :style="rise(7)">
+        <FeedStockCard />
+      </div>
+      <div class="animate-rise rise-stagger lg:col-span-7" :style="rise(8)">
+        <HouseRanking />
+      </div>
+    </section>
+
+    <!-- 5 · Sales -->
+    <section aria-label="Penjualan" class="animate-rise rise-stagger" :style="rise(9)">
+      <RecentOrders />
+    </section>
   </div>
 </template>

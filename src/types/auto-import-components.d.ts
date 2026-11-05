@@ -11,6 +11,17 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AapmBrandMark: typeof import('./../components/aapm/brand-mark.vue')['default']
+    AapmChartsBarList: typeof import('./../components/aapm/charts/bar-list.vue')['default']
+    AapmChartsBulletChart: typeof import('./../components/aapm/charts/bullet-chart.vue')['default']
+    AapmChartsChartLegend: typeof import('./../components/aapm/charts/chart-legend.vue')['default']
+    AapmChartsChartTooltip: typeof import('./../components/aapm/charts/chart-tooltip.vue')['default']
+    AapmChartsDonutChart: typeof import('./../components/aapm/charts/donut-chart.vue')['default']
+    AapmChartsHeatmap: typeof import('./../components/aapm/charts/heatmap.vue')['default']
+    AapmChartsSparkline: typeof import('./../components/aapm/charts/sparkline.vue')['default']
+    AapmChartsTrendDelta: typeof import('./../components/aapm/charts/trend-delta.vue')['default']
+    AapmIcon: typeof import('./../components/aapm/icon/AapmIcon.vue')['default']
+    AapmSegmentedControl: typeof import('./../components/aapm/segmented-control.vue')['default']
     AppSidebar: typeof import('./../components/app-sidebar/index.vue')['default']
     AppSidebarMenuButton: typeof import('./../components/app-sidebar/menu-button.vue')['default']
     AppSidebarNavFooter: typeof import('./../components/app-sidebar/nav-footer.vue')['default']
