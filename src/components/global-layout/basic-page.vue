@@ -11,6 +11,7 @@ defineProps<LayoutHeaderProps>()
     <BasicHeader
       :title="title"
       :description="description"
+      :overline="overline"
       :sticky="sticky"
     >
       <template #actions>

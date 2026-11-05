@@ -1,0 +1,136 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "meta": {
+    "name": "AAPM Brand Tokens",
+    "version": "1.1.0",
+    "status": "canonical",
+    "language": "id-ID",
+    "updated": "2026-09-03",
+    "description": "Sumber canonical primitive Brand AAPM dan alias Digital Brand yang telah dinormalisasi. Product Design System sebaiknya memetakan nilai ini ke semantic token produk, bukan menaburkan primitive langsung ke business screen.",
+    "governance": "Brand Core bersifat ketat. Perubahan pada brand.core atau semantic brand lintas produk harus diperlakukan sebagai ecosystem-level change. Product theme boleh membuat derivation tanpa mengubah master identity value."
+  },
+  "brand": {
+    "core": {
+      "green": {
+        "$type": "color",
+        "$value": "#318139",
+        "$description": "Hijau utama AAPM yang terdapat langsung pada SVG master resmi yang diberikan."
+      },
+      "orange": {
+        "$type": "color",
+        "$value": "#D4451A",
+        "$description": "Oranye utama AAPM yang terdapat langsung pada SVG master resmi yang diberikan."
+      },
+      "white": {
+        "$type": "color",
+        "$value": "#FFFFFF",
+        "$description": "Treatment putih/inverse yang digunakan pada varian identitas resmi."
+      },
+      "neutralDarkVariant": {
+        "$type": "color",
+        "$value": "#CCCCCC",
+        "$description": "Treatment neutral yang terdapat pada dark logo variant yang diberikan."
+      }
+    },
+    "digital": {
+      "lime": {
+        "$type": "color",
+        "$value": "#B4E717",
+        "$description": "Lime energetic yang berulang pada referensi public website AAPM untuk highlight, hero emphasis, dan branded controls."
+      },
+      "limeSoft": {
+        "$type": "color",
+        "$value": "#C3EC45",
+        "$description": "Lapisan lime yang lebih lembut untuk secondary highlight dan visual layering."
+      },
+      "deepGreen": {
+        "$type": "color",
+        "$value": "#2C7433",
+        "$description": "Hijau lebih dalam yang diamati pada branded surface dan illustration layer."
+      },
+      "warmCanvas": {
+        "$type": "color",
+        "$value": "#F6F5F2",
+        "$description": "Warm off-white canvas yang digunakan sebagai ruang visual terang dan netral."
+      },
+      "greenTint": {
+        "$type": "color",
+        "$value": "#F2FCF3",
+        "$description": "Surface hijau sangat muda untuk branded tint yang subtle."
+      },
+      "softSurface": {
+        "$type": "color",
+        "$value": "#EFF5EF",
+        "$description": "Soft green-neutral surface untuk panel, section, dan content grouping."
+      },
+      "ink": {
+        "$type": "color",
+        "$value": "#10191A",
+        "$description": "Near-black digital ink untuk content dengan keterbacaan tinggi."
+      }
+    }
+  },
+  "semantic": {
+    "brand": {
+      "primary": {
+        "$type": "color",
+        "$value": "{brand.core.green}",
+        "$description": "Identitas brand utama atau branded surface utama."
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{brand.core.orange}",
+        "$description": "Warm accent, editorial emphasis, atau CTA tertentu sesuai product context."
+      },
+      "highlight": {
+        "$type": "color",
+        "$value": "{brand.digital.lime}",
+        "$description": "High-energy highlight dan visual emphasis."
+      },
+      "highlightSoft": {
+        "$type": "color",
+        "$value": "{brand.digital.limeSoft}",
+        "$description": "Secondary highlight layer."
+      },
+      "surfaceDeep": {
+        "$type": "color",
+        "$value": "{brand.digital.deepGreen}",
+        "$description": "Deep branded surface."
+      }
+    },
+    "surface": {
+      "canvasWarm": {
+        "$type": "color",
+        "$value": "{brand.digital.warmCanvas}",
+        "$description": "Warm application/site canvas."
+      },
+      "brandTint": {
+        "$type": "color",
+        "$value": "{brand.digital.greenTint}",
+        "$description": "Subtle brand-tinted surface."
+      },
+      "brandSoft": {
+        "$type": "color",
+        "$value": "{brand.digital.softSurface}",
+        "$description": "Soft branded content/feature surface."
+      }
+    },
+    "text": {
+      "ink": {
+        "$type": "color",
+        "$value": "{brand.digital.ink}",
+        "$description": "Teks gelap dengan keterbacaan tinggi."
+      },
+      "onBrand": {
+        "$type": "color",
+        "$value": "{brand.core.white}",
+        "$description": "Teks/icon di atas strong branded surface ketika contrast memenuhi accessibility requirement."
+      }
+    }
+  },
+  "notes": {
+    "businessStatus": "Business state seperti pending, approved, closed, warning, dan danger tidak boleh memakai Brand Core secara langsung sebagai meaning. Gunakan semantic status token terpisah.",
+    "darkMode": "Dark mode adalah theme concern. Pilih official dark logo asset bila tersedia dan gunakan tonal mapping di product theme tanpa mengubah Brand Core.",
+    "creativeBoundary": "Creative exploration diperbolehkan pada theme, template, composition, illustration, motion, dan product expression. Perubahan master logo, Brand Core, atau semantic contract lintas produk harus melalui governance."
+  }
+}

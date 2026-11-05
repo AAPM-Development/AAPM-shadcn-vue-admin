@@ -1,0 +1,203 @@
+/*
+ * AAPM semantic tokens — layer 2 of 3.
+ *
+ * Rule: surfaces are monochrome. Canvas, cards, popovers, sidebar, borders and muted text
+ * keep the template's original shadcn-vue neutral values (oklch, chroma 0). AAPM color
+ * appears only on interactive and meaning-bearing parts: primary buttons, focus ring,
+ * active nav, status tags and data visualization.
+ *
+ * Light = "Soft Structural": white, hairline neutral borders, near-flat elevation.
+ * Dark  = "Dark Operator": shadcn neutral darks, AAPM green actions, lime focus signal.
+ */
+:root {
+  color-scheme: light;
+  --radius: 0.625rem;
+
+  /* shadcn contract — neutral values are the template's originals */
+  /* Soft Structural canvas: neutral off-white so white cards separate without hard lines */
+  --background: oklch(0.972 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: var(--aapm-green-600);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  /* 0.556 → 0.52: shadcn's pair on --muted measured 4.35:1; UX-08 needs 4.5:1 */
+  --muted-foreground: oklch(0.52 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  /* Focus uses the brand green: ≥ 3:1 against white (UX-08) */
+  --ring: var(--aapm-green-600);
+
+  /* Brand roles — for marks, buttons and small accents, never for surfaces */
+  --brand: var(--aapm-green-600);
+  --brand-foreground: oklch(0.985 0 0);
+  --brand-deep: var(--aapm-green-700);
+  --brand-accent: var(--aapm-orange-600);
+  --brand-accent-foreground: oklch(0.985 0 0);
+  --brand-accent-ink: var(--aapm-orange-700);
+  --highlight: var(--aapm-lime-500);
+  --highlight-foreground: oklch(0.145 0 0);
+  /* Neutral helpers (monochrome) */
+  --surface-tint: oklch(0.985 0 0);
+  --surface-soft: oklch(0.97 0 0);
+  --surface-sunken: oklch(0.97 0 0);
+
+  /* Status — muted pastel wash + dark ink, text pairs ≥ 4.5:1; always with icon + label */
+  --success: #346538;
+  --success-fill: var(--aapm-status-success-fill);
+  --success-soft: #edf3ec;
+  --warning: #956400;
+  --warning-fill: var(--aapm-status-warning-fill);
+  --warning-soft: #fbf3db;
+  --danger: #9f2f2d;
+  --danger-fill: var(--aapm-status-danger-fill);
+  --danger-soft: #fdebec;
+  --info: #1f6c9f;
+  --info-fill: var(--aapm-status-info-fill);
+  --info-soft: #e1f3fe;
+
+  /* Data visualization — categorical order validated (dataviz validator, surface #FFFFFF) */
+  --chart-1: var(--aapm-green-600);
+  --chart-2: var(--aapm-teal-600);
+  --chart-3: var(--aapm-orange-600);
+  --chart-4: var(--aapm-violet-600);
+  --chart-5: var(--aapm-lime-600);
+  --chart-surface: oklch(1 0 0);
+  --chart-grid: oklch(0.94 0 0);
+  --chart-axis: oklch(0.556 0 0);
+  --chart-target: oklch(0.205 0 0);
+  /* Sequential: one green hue, light → dark = low → high; step 0 is neutral */
+  --seq-0: oklch(0.96 0 0);
+  --seq-1: #d9efdc;
+  --seq-2: #a9d8b0;
+  --seq-3: #6ab877;
+  --seq-4: #3a8f47;
+  --seq-5: #1f5f29;
+  /* Sequential ramp for metrics where MORE IS WORSE (mortality, rejects): one warm red hue */
+  --seq-bad-1: oklch(0.93 0.035 25);
+  --seq-bad-2: oklch(0.85 0.075 25);
+  --seq-bad-3: oklch(0.74 0.12 27);
+  --seq-bad-4: oklch(0.6 0.15 28);
+  --seq-bad-5: oklch(0.47 0.14 28);
+
+  /* Sidebar — template neutrals, AAPM green only for the active/primary item */
+  --sidebar: oklch(0.992 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: var(--aapm-green-600);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.955 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: var(--aapm-green-600);
+  /* Active nav item is a component, so it may carry brand color (hover stays neutral) */
+  --nav-active: oklch(0.955 0.03 145);
+  --nav-active-foreground: var(--aapm-green-800);
+  --nav-active-icon: var(--aapm-green-600);
+  --nav-active-indicator: var(--aapm-green-600);
+
+  /* Elevation — near-flat, neutral; hairline borders carry structure */
+  --elevation-card: 0 0 0 1px rgb(0 0 0 / 0.045), 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -14px rgb(0 0 0 / 0.12);
+  --elevation-card-hover: 0 0 0 1px rgb(0 0 0 / 0.07), 0 2px 4px rgb(0 0 0 / 0.05), 0 18px 36px -18px rgb(0 0 0 / 0.2);
+  --elevation-pop: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -12px rgb(0 0 0 / 0.14);
+  --edge-highlight: inset 0 1px 0 rgb(255 255 255 / 0.8);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: var(--aapm-green-550);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.145 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: var(--aapm-lime-500);
+
+  --brand: var(--aapm-green-550);
+  --brand-foreground: oklch(0.145 0 0);
+  --brand-deep: var(--aapm-green-800);
+  --brand-accent: var(--aapm-orange-500);
+  --brand-accent-foreground: oklch(0.145 0 0);
+  --brand-accent-ink: #ee7440;
+  --highlight: var(--aapm-lime-500);
+  --highlight-foreground: oklch(0.145 0 0);
+  --surface-tint: oklch(0.24 0 0);
+  --surface-soft: oklch(0.269 0 0);
+  --surface-sunken: oklch(0.12 0 0);
+
+  --success: var(--aapm-status-success-dark);
+  --success-fill: var(--aapm-status-success-dark);
+  --success-soft: color-mix(in oklab, var(--aapm-status-success-dark) 16%, transparent);
+  --warning: var(--aapm-status-warning-dark);
+  --warning-fill: var(--aapm-status-warning-dark);
+  --warning-soft: color-mix(in oklab, var(--aapm-status-warning-dark) 16%, transparent);
+  --danger: var(--aapm-status-danger-dark);
+  --danger-fill: var(--aapm-status-danger-dark);
+  --danger-soft: color-mix(in oklab, var(--aapm-status-danger-dark) 16%, transparent);
+  --info: var(--aapm-status-info-dark);
+  --info-fill: var(--aapm-status-info-dark);
+  --info-soft: color-mix(in oklab, var(--aapm-status-info-dark) 16%, transparent);
+
+  /* Validated against a #14181C-class dark surface */
+  --chart-1: var(--aapm-green-500);
+  --chart-2: var(--aapm-teal-500);
+  --chart-3: var(--aapm-orange-500);
+  --chart-4: var(--aapm-violet-500);
+  --chart-5: var(--aapm-lime-700);
+  --chart-surface: oklch(0.205 0 0);
+  --chart-grid: oklch(1 0 0 / 7%);
+  --chart-axis: oklch(0.708 0 0);
+  --chart-target: oklch(0.985 0 0);
+  --seq-0: oklch(0.269 0 0);
+  --seq-1: #18291e;
+  --seq-2: #1f4429;
+  --seq-3: #2b6a38;
+  --seq-4: #3e9550;
+  --seq-5: #6cc57e;
+  --seq-bad-1: oklch(0.3 0.05 25);
+  --seq-bad-2: oklch(0.4 0.09 26);
+  --seq-bad-3: oklch(0.52 0.13 27);
+  --seq-bad-4: oklch(0.64 0.15 28);
+  --seq-bad-5: oklch(0.76 0.13 30);
+
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: var(--aapm-green-550);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: var(--aapm-lime-500);
+  --nav-active: color-mix(in oklab, var(--aapm-green-500) 20%, transparent);
+  --nav-active-foreground: #b4e3bd;
+  --nav-active-icon: var(--aapm-green-400);
+  --nav-active-indicator: var(--aapm-lime-500);
+
+  --elevation-card:
+    inset 0 1px 0 rgb(255 255 255 / 0.04), 0 0 0 1px rgb(255 255 255 / 0.07), 0 12px 28px -16px rgb(0 0 0 / 0.6);
+  --elevation-card-hover:
+    inset 0 1px 0 rgb(255 255 255 / 0.06), 0 0 0 1px rgb(255 255 255 / 0.12), 0 18px 36px -18px rgb(0 0 0 / 0.75);
+  --elevation-pop: 0 0 0 1px rgb(255 255 255 / 0.06), 0 20px 40px -20px rgb(0 0 0 / 0.7);
+  --edge-highlight: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}

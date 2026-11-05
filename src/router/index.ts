@@ -8,7 +8,11 @@ const router = createRouter({
   history: createWebHistory(),
   routes: setupLayouts(routes),
 
-  scrollBehavior() {
+  scrollBehavior(to, from) {
+    // In-page anchors (e.g. /ui-kit#status-semantik) are scrolled by the page itself, which may
+    // first have to open the tab that holds the anchor.
+    if (to.hash && to.path === from.path)
+      return false
     return { left: 0, top: 0, behavior: 'smooth' }
   },
 })

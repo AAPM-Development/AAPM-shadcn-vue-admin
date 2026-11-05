@@ -2,32 +2,30 @@ import { AwardIcon, BadgeDollarSignIcon, HandshakeIcon, ShieldIcon } from '@luci
 
 import type { FacetedFilterOption } from '@/components/data-table'
 
+import { toneOf } from '@/components/aapm/tone/tones'
+
 import type { UserRole, UserStatus } from './schema'
 
-export const callTypes = [
+export const callTypes: FacetedFilterOption<UserStatus>[] = ([
   {
     label: 'Active',
     value: 'active',
-    style: 'bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200',
   },
   {
     label: 'Inactive',
     value: 'inactive',
-    style: 'bg-neutral-300/40 border-neutral-300',
   },
   {
     label: 'Invited',
     value: 'invited',
-    style: 'bg-sky-200/40 text-sky-900 dark:text-sky-100 border-sky-300',
   },
   {
     label: 'Suspended',
     value: 'suspended',
-    style: 'bg-destructive/10 dark:bg-destructive/50 text-destructive dark:text-primary border-destructive/10',
   },
-] satisfies (FacetedFilterOption<UserStatus> & { style: string })[]
+] satisfies FacetedFilterOption<UserStatus>[]).map(o => ({ ...o, tone: toneOf('user', o.value) }))
 
-export const userTypes = [
+export const userTypes: FacetedFilterOption<UserRole>[] = ([
   {
     label: 'Superadmin',
     value: 'superadmin',
@@ -48,4 +46,4 @@ export const userTypes = [
     value: 'cashier',
     icon: ShieldIcon,
   },
-] satisfies FacetedFilterOption<UserRole>[]
+] satisfies FacetedFilterOption<UserRole>[]).map(o => ({ ...o, tone: toneOf('role', o.value) }))

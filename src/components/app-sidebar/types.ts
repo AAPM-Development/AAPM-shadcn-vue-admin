@@ -1,7 +1,6 @@
-import type { LucideProps } from '@lucide/vue'
-import type { FunctionalComponent } from 'vue'
+import type { Component } from 'vue'
 
-type NavIcon = FunctionalComponent<LucideProps, Record<any, any>, any, Record<any, any>>
+export type NavIcon = Component
 
 interface BaseNavItem {
   title: string
@@ -41,8 +40,9 @@ export interface User {
 
 export interface Team {
   name: string
-  logo: NavIcon
   plan: string
+  /** Optional override; the official AAPM mark is used when omitted. */
+  logo?: NavIcon
 }
 
 export interface SidebarData {

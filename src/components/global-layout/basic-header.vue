@@ -9,21 +9,24 @@ defineProps<LayoutHeaderProps>()
 <template>
   <header
     :class="cn(
-      'flex flex-col md:flex-row gap-2 justify-between py-2',
-      sticky ? 'sticky top-14 z-40 bg-background' : '',
+      'flex flex-col gap-4 py-3 md:flex-row md:items-end md:justify-between',
+      sticky ? 'sticky top-14 z-30 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70' : '',
     )"
   >
-    <main>
-      <h1 class="text-2xl font-bold">
+    <div class="min-w-0 space-y-1.5 wrap-anywhere">
+      <p v-if="overline" class="eyebrow text-muted-foreground">
+        {{ overline }}
+      </p>
+      <h1 class="text-2xl font-semibold tracking-title text-foreground sm:text-[1.75rem] sm:leading-[2.1875rem]">
         {{ title }}
       </h1>
-      <p v-if="description" class="text-muted-foreground">
+      <p v-if="description" class="max-w-[65ch] text-sm text-muted-foreground text-pretty">
         {{ description }}
       </p>
-    </main>
+    </div>
 
-    <aside class="flex items-center gap-2 flex-wrap">
+    <div class="flex min-w-0 flex-wrap items-center gap-2 [&_button]:h-auto [&_button]:min-h-9 [&_button]:max-w-full [&_button]:whitespace-normal [&_button]:wrap-anywhere">
       <slot name="actions" />
-    </aside>
+    </div>
   </header>
 </template>

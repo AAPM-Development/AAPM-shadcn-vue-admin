@@ -1,0 +1,40 @@
+/*
+ * AAPM component tokens — layer 3 of 3.
+ * Aliases onto shadcn-vue's own radius scale (driven by `--radius` / the theme store),
+ * so AAPM components and components/ui primitives always share one geometry.
+ */
+:root {
+  --radius-control: calc(var(--radius) - 2px); /* = rounded-md, shadcn buttons/inputs */
+  --radius-panel: var(--radius); /* = rounded-lg */
+  --radius-card: calc(var(--radius) + 4px); /* = rounded-xl, shadcn Card */
+  --radius-shell: calc(var(--radius) + 8px);
+
+  --card-shadow: var(--elevation-card);
+  --card-shadow-hover: var(--elevation-card-hover);
+  --popover-shadow: var(--elevation-pop);
+
+  --layout-sidebar-width: 16rem;
+  --topbar-height: calc(var(--spacing) * 14);
+  --topbar-bg: color-mix(in oklab, var(--background) 82%, transparent);
+
+  --chart-line-width: 2px;
+  --chart-trend-height: 20rem;
+  --kpi-value-hero: 2.75rem;
+  --kpi-value-tile: 1.75rem;
+  --kpi-hero-min: 18rem;
+  --chart-area-opacity: 0.1;
+  --chart-bar-max: 24px;
+  --chart-mark-gap: 2px;
+  /* Data-viz direction (docs/superpowers/specs/2026-11-05-aapm-dataviz-direction.md) */
+  --chart-area-top: 0.2; /* gradient wash: series hue at 20% under the line → 0 at the baseline */
+  --chart-dim: 0.28; /* everything that is not in focus */
+  --chart-history: 0.42; /* sparkline history before the current period */
+  --chart-enter: 800ms;
+  --chart-tween: 480ms;
+  --chart-tooltip-bg: color-mix(in oklab, var(--popover) 88%, transparent);
+  --chart-hit-min: 24px;
+
+  --motion-fast: var(--aapm-duration-fast) var(--aapm-ease-out);
+  --motion-base: var(--aapm-duration-base) var(--aapm-ease-out);
+  --motion-slow: var(--aapm-duration-slow) var(--aapm-ease-emphasis);
+}

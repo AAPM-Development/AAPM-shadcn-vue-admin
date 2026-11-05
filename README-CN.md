@@ -151,7 +151,7 @@ router.replace('/errors/404')
 - `VITE_SERVER_API_PREFIX`：API 路径前缀，默认为 `/api`。
 - `VITE_SERVER_API_TIMEOUT`：请求超时时间，单位为毫秒，默认为 `5000`。
 
-共享 ofetch 客户端位于 `src/lib/api-client.ts`，API 示例位于 `src/services/api/`。任务页面目前使用 `src/pages/tasks/data/tasks.json`，尚未接入任务 API 示例。
+共享 ofetch 客户端位于 `src/services/api-client.ts`，API 示例位于 `src/services/api/`。任务页面目前使用 `src/pages/tasks/data/tasks.json`，尚未接入任务 API 示例。
 
 ## 📄 许可证
 

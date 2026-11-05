@@ -1,0 +1,188 @@
+/* Toast v2 by sonner data-type: pastel success/info/warning, solid blocking error (Task 4).
+ * Keyed on [data-type], so direct toast.*() calls match notify.*() (components/aapm/feedback/notify.ts).
+ * vue-sonner/style.css loads after this file: every rule out-specifies its counterpart there.
+ * Moving rules live inside @media (prefers-reduced-motion: no-preference); the toast entry blur and
+ * the error card shake (aapm-shake-x) stay in assets/motion.css. */
+
+/* ── Tone per type: --aapm-toast-tone = icon, accent and bar · --aapm-toast-wash = pastel surface ── */
+[data-sonner-toast][data-type='success'] {
+  --aapm-toast-tone: var(--success);
+  --aapm-toast-wash: var(--success-soft);
+}
+[data-sonner-toast][data-type='info'] {
+  --aapm-toast-tone: var(--info);
+  --aapm-toast-wash: var(--info-soft);
+}
+[data-sonner-toast][data-type='warning'] {
+  --aapm-toast-tone: var(--warning);
+  --aapm-toast-wash: var(--warning-soft);
+}
+
+/* Blocking (error): solid red with white ink, ≥ 4.5:1 (checked in feedback/__tests__/notify.test.ts) */
+[data-sonner-toast][data-type='error'] {
+  --aapm-toast-solid: var(--danger-fill);
+  --aapm-toast-tone: var(--aapm-core-white);
+  --normal-bg: var(--aapm-toast-solid);
+  --normal-text: var(--aapm-core-white);
+  --normal-border: var(--aapm-toast-solid);
+}
+/* Dark-theme --danger-fill is a bright red (≈ 3.1:1 with white), so the toast keeps the deeper step */
+.dark [data-sonner-toast][data-type='error'] {
+  --aapm-toast-solid: var(--aapm-status-danger);
+}
+
+/* ── Surfaces ──────────────────────────────────────────────────────────────── */
+[data-sonner-toast][data-styled='true']:is([data-type='success'], [data-type='info'], [data-type='warning']) {
+  --normal-text: var(--foreground);
+  /* Even hairline all round, tinted by the tone — no heavy one-sided accent bar (user ruling). */
+  --normal-border: color-mix(in oklab, var(--aapm-toast-tone) 28%, var(--border));
+  /* the dark-theme washes are translucent: lay them over the popover surface */
+  background: linear-gradient(var(--aapm-toast-wash), var(--aapm-toast-wash)), var(--popover);
+  border: 1px solid var(--normal-border);
+}
+[data-sonner-toast][data-styled='true'][data-type='error'] {
+  background: var(--aapm-toast-solid);
+  border-color: var(--aapm-toast-solid);
+  color: var(--aapm-core-white);
+}
+
+[data-sonner-toast][data-styled='true'][data-type] [data-icon] {
+  color: var(--aapm-toast-tone, currentColor);
+}
+[data-sonner-toast][data-styled='true'][data-type] [data-description] {
+  color: var(--muted-foreground);
+}
+[data-sonner-toast][data-styled='true'][data-type='error'] [data-title] {
+  font-weight: 600;
+}
+[data-sonner-toast][data-styled='true'][data-type='error'] [data-description] {
+  color: var(--aapm-core-white);
+}
+[data-sonner-toast][data-styled='true'][data-type='error'] [data-close-button] {
+  background: var(--aapm-toast-solid);
+  border-color: var(--aapm-core-white);
+  color: var(--aapm-core-white);
+}
+[data-sonner-toast][data-styled='true'][data-type='error']:hover [data-close-button]:hover {
+  background: var(--aapm-core-white);
+  border-color: var(--aapm-core-white);
+  color: var(--aapm-toast-solid);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ── Icon motion, once the toast has mounted ───────────────────────────────── */
+  /* success: the check draws itself, short stroke first (lucide circle-check path ≈ 11.3 units) */
+  [data-sonner-toast][data-mounted='true'][data-type='success']:not([data-promise='true']) [data-icon] svg > path {
+    stroke-dasharray: 12;
+    animation: aapm-toast-check-draw 360ms var(--aapm-ease-out) 160ms backwards;
+  }
+  /* info: swings like a bell from its top */
+  [data-sonner-toast][data-mounted='true'][data-type='info']:not([data-promise='true']) [data-icon] svg {
+    transform-origin: 50% 8%;
+    animation: aapm-toast-swing 420ms var(--aapm-ease-out) 140ms backwards;
+  }
+  /* warning: the triangle nods (dips and rises on its base) */
+  [data-sonner-toast][data-mounted='true'][data-type='warning']:not([data-promise='true']) [data-icon] svg {
+    transform-origin: 50% 100%;
+    animation: aapm-toast-nod 380ms var(--aapm-ease-out) 140ms backwards;
+  }
+  /* error: the icon shakes a beat after the card (same keyframes as the card in motion.css) */
+  [data-sonner-toast][data-mounted='true'][data-type='error']:not([data-promise='true']) [data-icon] svg {
+    animation: aapm-shake-x 420ms 300ms ease-in-out both;
+  }
+
+  /* ── Remaining-time bar ─────────────────────────────────────────────────────
+   * scaleX 1 → 0 over --aapm-toast-duration (notify.* sets it; sonner's default is 4000ms).
+   * Sonner pauses its timer while the stack is expanded (hover) or swiped; the bar follows. */
+  [data-sonner-toast][data-styled='true'][data-mounted='true']:not(
+      [data-type='loading'],
+      [data-promise='true'],
+      .aapm-toast--persistent
+    )::after {
+    content: '';
+    position: absolute;
+    inset: auto var(--border-radius, 0.625rem) 0;
+    width: auto;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--aapm-toast-tone, var(--muted-foreground));
+    transform-origin: left center;
+    pointer-events: none;
+    transition: opacity 200ms var(--aapm-ease-out);
+    animation-name: aapm-toast-remaining;
+    animation-duration: var(--aapm-toast-duration, 4000ms);
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+  [data-sonner-toaster][dir='rtl'] [data-sonner-toast][data-styled='true'][data-mounted='true']::after {
+    transform-origin: right center;
+  }
+  [data-sonner-toast][data-expanded='true']::after,
+  [data-sonner-toast][data-swiping='true']::after {
+    animation-play-state: paused;
+  }
+  /* stacked behind the front toast: keep the bar out of the peeking edge */
+  [data-sonner-toast][data-expanded='false'][data-front='false']::after {
+    opacity: 0;
+  }
+  /* The bar takes over ::after, which sonner uses as the hover bridge across the gap between
+   * expanded toasts; rebuild that bridge on ::before (sonner only needs ::before while swiping/removing). */
+  [data-sonner-toast][data-expanded='true'][data-swiping='false'][data-removed='false']::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    width: 100%;
+    height: calc(var(--gap) + 1px);
+  }
+}
+
+@keyframes aapm-toast-check-draw {
+  from {
+    stroke-dashoffset: -12;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes aapm-toast-swing {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  20% {
+    rotate: 14deg;
+  }
+  45% {
+    rotate: -10deg;
+  }
+  70% {
+    rotate: 5deg;
+  }
+  88% {
+    rotate: -2deg;
+  }
+}
+@keyframes aapm-toast-nod {
+  0%,
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+  30% {
+    translate: 0 1.5px;
+    scale: 1 0.86;
+  }
+  60% {
+    translate: 0 -1px;
+    scale: 1 1.05;
+  }
+}
+@keyframes aapm-toast-remaining {
+  from {
+    scale: 1 1;
+  }
+  to {
+    scale: 0 1;
+  }
+}

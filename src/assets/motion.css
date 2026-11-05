@@ -1,0 +1,709 @@
+/*
+ * AAPM motion layer — micro-interactions for every shadcn-vue primitive.
+ *
+ * - Hooks only into reka-ui/shadcn `data-slot` + `data-state` attributes, so components/ui stays stock.
+ * - Light: ≤ 340ms, transform / opacity / scale / rotate (individual properties compose with
+ *   Tailwind's `translate`/`scale` utilities). Disclosure height animations use reka's own
+ *   content-height variables, as shadcn's accordion already does.
+ * - Motion blur is directional (#aapm-mb-y-*, mounted once in App.vue), stepped down as the
+ *   element decelerates and removed at rest. Never a uniform gaussian blur.
+ * - Everything sits behind `prefers-reduced-motion: no-preference`.
+ * Easing tokens: --aapm-ease-out / -emphasis / -exit / -overshoot (tokens/primitives.css).
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ── Buttons & pressables ─────────────────────────────────────────────────── */
+  [data-slot='button']:not(:disabled):active,
+  [data-slot='sidebar-trigger']:not(:disabled):active,
+  [data-slot='calendar-cell-trigger']:not([data-disabled]):active,
+  [data-slot='calendar-prev-button']:active,
+  [data-slot='calendar-next-button']:active {
+    scale: 0.97;
+  }
+  [data-slot='button'],
+  [data-slot='sidebar-trigger'],
+  [data-slot='calendar-cell-trigger'] {
+    transition:
+      color 150ms var(--aapm-ease-out),
+      background-color 150ms var(--aapm-ease-out),
+      border-color 150ms var(--aapm-ease-out),
+      box-shadow 200ms var(--aapm-ease-out),
+      scale 110ms var(--aapm-ease-out);
+  }
+  [data-slot='calendar-cell-trigger'][data-selected] {
+    animation: aapm-dot-in 240ms var(--aapm-ease-overshoot) backwards;
+  }
+
+  /* ── Dialog, confirmation, sheet overlay ──────────────────────────────────── */
+  [data-slot='dialog-content'][data-state='open'],
+  [data-slot='alert-dialog-content'][data-state='open'] {
+    animation: aapm-pop-in 340ms var(--aapm-ease-emphasis) backwards;
+  }
+  [data-slot='dialog-content'][data-state='closed'],
+  [data-slot='alert-dialog-content'][data-state='closed'] {
+    animation: aapm-pop-out 150ms var(--aapm-ease-exit) both;
+  }
+  [data-slot='dialog-overlay'][data-state='open'],
+  [data-slot='alert-dialog-overlay'][data-state='open'],
+  [data-slot='sheet-overlay'][data-state='open'] {
+    animation: aapm-fade-in 240ms var(--aapm-ease-out) backwards;
+  }
+  [data-slot='dialog-overlay'][data-state='closed'],
+  [data-slot='alert-dialog-overlay'][data-state='closed'],
+  [data-slot='sheet-overlay'][data-state='closed'] {
+    animation: aapm-fade-out 150ms var(--aapm-ease-exit) both;
+  }
+
+  /* ── Toast: motion blur while it slides in; an error gives one short shake ─── */
+  [data-sonner-toast][data-mounted='true'] {
+    animation: aapm-blur-settle 380ms linear backwards;
+  }
+  [data-sonner-toast][data-type='error'][data-mounted='true'] {
+    animation:
+      aapm-blur-settle 380ms linear backwards,
+      aapm-shake-x 480ms 260ms ease-in-out both;
+  }
+
+  /* ── Floating content: select, menus, popover, hover card, tooltip ─────────── */
+  [data-slot='select-content'][data-state='open'],
+  [data-slot='dropdown-menu-content'][data-state='open'],
+  [data-slot='dropdown-menu-sub-content'][data-state='open'],
+  [data-slot='context-menu-content'][data-state='open'],
+  [data-slot='menubar-content'][data-state='open'],
+  [data-slot='popover-content'][data-state='open'],
+  [data-slot='hover-card-content'][data-state='open'] {
+    animation: aapm-menu-in 200ms var(--aapm-ease-emphasis) backwards;
+  }
+  [data-slot='tooltip-content'][data-state='delayed-open'],
+  [data-slot='tooltip-content'][data-state='instant-open'] {
+    animation: aapm-menu-in 150ms var(--aapm-ease-emphasis) backwards;
+  }
+  [data-slot='select-content'][data-state='closed'],
+  [data-slot='dropdown-menu-content'][data-state='closed'],
+  [data-slot='dropdown-menu-sub-content'][data-state='closed'],
+  [data-slot='context-menu-content'][data-state='closed'],
+  [data-slot='menubar-content'][data-state='closed'],
+  [data-slot='popover-content'][data-state='closed'],
+  [data-slot='hover-card-content'][data-state='closed'],
+  [data-slot='tooltip-content'][data-state='closed'] {
+    animation: aapm-menu-out 110ms var(--aapm-ease-exit) both;
+  }
+  [data-side='top'] {
+    --aapm-from-y: 4px;
+  }
+  [data-side='left'] {
+    --aapm-from-x: 4px;
+    --aapm-from-y: 0px;
+  }
+  [data-side='right'] {
+    --aapm-from-x: -4px;
+    --aapm-from-y: 0px;
+  }
+
+  /* Items inside menus, select and command palette */
+  :is(
+    [data-slot='select-item'],
+    [data-slot='dropdown-menu-item'],
+    [data-slot='dropdown-menu-radio-item'],
+    [data-slot='dropdown-menu-checkbox-item'],
+    [data-slot='dropdown-menu-sub-trigger'],
+    [data-slot='command-item'],
+    [data-slot='navigation-menu-link']
+  ) {
+    transition:
+      background-color 120ms var(--aapm-ease-out),
+      color 120ms var(--aapm-ease-out);
+  }
+  :is(
+      [data-slot='select-item'],
+      [data-slot='dropdown-menu-radio-item'],
+      [data-slot='dropdown-menu-checkbox-item']
+    )[data-state='checked']
+    svg {
+    animation: aapm-dot-in 240ms var(--aapm-ease-overshoot) backwards;
+  }
+  /* Chevrons rotate with the panel they control */
+  [data-slot='select-trigger'] > svg:last-child,
+  [data-slot='accordion-trigger'] > svg,
+  [data-slot='navigation-menu-trigger'] > svg,
+  [data-slot='collapsible-trigger'] svg,
+  [data-sidebar='menu-button'] > svg:last-child {
+    transition:
+      rotate 240ms var(--aapm-ease-emphasis),
+      transform 240ms var(--aapm-ease-emphasis);
+  }
+  [data-slot='select-trigger'][data-state='open'] > svg:last-child {
+    rotate: 180deg;
+  }
+
+  /* ── Radio: dot pops into the new option and shrinks out of the old one ─────── */
+  [data-slot='radio-group-item'] {
+    transition:
+      border-color 150ms var(--aapm-ease-out),
+      box-shadow 200ms var(--aapm-ease-out),
+      scale 120ms var(--aapm-ease-out);
+  }
+  [data-slot='radio-group-item']:not(:disabled):active {
+    scale: 0.88;
+  }
+  [data-slot='radio-group-indicator'] svg {
+    animation: aapm-dot-in 260ms var(--aapm-ease-overshoot) backwards;
+  }
+  [data-slot='radio-group-indicator'][data-state='unchecked'] svg {
+    animation: aapm-dot-out 140ms var(--aapm-ease-exit) both;
+  }
+
+  /* ── Checkbox: fill eases in, the tick draws itself ──────────────────────── */
+  [data-slot='checkbox'] {
+    transition:
+      background-color 150ms var(--aapm-ease-out),
+      border-color 150ms var(--aapm-ease-out),
+      box-shadow 200ms var(--aapm-ease-out),
+      scale 120ms var(--aapm-ease-out);
+  }
+  [data-slot='checkbox']:not(:disabled):active {
+    scale: 0.88;
+  }
+  [data-slot='checkbox-indicator'] svg :is(path, polyline) {
+    stroke-dasharray: 24;
+    animation: aapm-check-draw 240ms 30ms var(--aapm-ease-out) backwards;
+  }
+
+  /* ── Switch: springy thumb that squashes while pressed ──────────────────────── */
+  [data-slot='switch'] {
+    transition:
+      background-color 200ms var(--aapm-ease-out),
+      box-shadow 200ms var(--aapm-ease-out);
+  }
+  [data-slot='switch-thumb'] {
+    transition:
+      transform 300ms var(--aapm-ease-overshoot),
+      scale 140ms var(--aapm-ease-out);
+  }
+  [data-slot='switch']:not(:disabled):active [data-slot='switch-thumb'] {
+    scale: 1.16 0.88;
+  }
+
+  /* ── Toggle, toggle group, tabs ─────────────────────────────────────────── */
+  [data-slot='toggle'],
+  [data-slot='toggle-group-item'],
+  [data-slot='tabs-trigger'] {
+    transition:
+      background-color 180ms var(--aapm-ease-out),
+      color 180ms var(--aapm-ease-out),
+      box-shadow 200ms var(--aapm-ease-out),
+      scale 120ms var(--aapm-ease-out);
+  }
+  [data-slot='toggle']:not(:disabled):active,
+  [data-slot='toggle-group-item']:not(:disabled):active,
+  [data-slot='tabs-trigger']:not(:disabled):active {
+    scale: 0.96;
+  }
+  [data-slot='tabs-content'][data-state='active'] {
+    animation: aapm-fade-up 260ms var(--aapm-ease-emphasis) backwards;
+  }
+
+  /* ── Fields: the focus ring grows in rather than snapping ─────────────────── */
+  :is(
+    [data-slot='input'],
+    [data-slot='textarea'],
+    [data-slot='select-trigger'],
+    [data-slot='command-input'],
+    [data-slot='sidebar-input']
+  ) {
+    transition:
+      color 150ms var(--aapm-ease-out),
+      border-color 150ms var(--aapm-ease-out),
+      background-color 150ms var(--aapm-ease-out),
+      box-shadow 220ms var(--aapm-ease-emphasis);
+  }
+
+  /* ── Disclosure: collapsible (sidebar groups, filters) and accordion ──────── */
+  [data-slot='collapsible-content'] {
+    overflow: hidden;
+  }
+  [data-slot='collapsible-content'][data-state='open'] {
+    animation: aapm-collapse-down 240ms var(--aapm-ease-emphasis) backwards;
+  }
+  [data-slot='collapsible-content'][data-state='closed'] {
+    animation: aapm-collapse-up 170ms var(--aapm-ease-exit) both;
+  }
+  [data-slot='collapsible-content'][data-state='open'] > * {
+    animation: aapm-fade-up 260ms 40ms var(--aapm-ease-emphasis) backwards;
+  }
+  [data-slot='accordion-content'][data-state='open'] > * {
+    animation: aapm-fade-up 260ms 40ms var(--aapm-ease-emphasis) backwards;
+  }
+
+  /* ── Sidebar: eased collapse, hover tint, sub-item slide ──────────────────── */
+  [data-slot='sidebar'] > div {
+    transition-duration: 260ms;
+    transition-timing-function: var(--aapm-ease-emphasis);
+  }
+  [data-slot='sidebar-menu-button'],
+  [data-slot='sidebar-menu-sub-button'] {
+    transition:
+      background-color 150ms var(--aapm-ease-out),
+      color 150ms var(--aapm-ease-out),
+      width 260ms var(--aapm-ease-emphasis),
+      height 260ms var(--aapm-ease-emphasis),
+      padding 260ms var(--aapm-ease-emphasis);
+  }
+  [data-slot='sidebar-menu-sub-button']:hover > * {
+    translate: 2px 0;
+  }
+  [data-slot='sidebar-menu-sub-button'] > * {
+    transition: translate 180ms var(--aapm-ease-out);
+  }
+
+  /* ── Data surfaces ──────────────────────────────────────────────────────── */
+  [data-slot='table-row'] {
+    transition: background-color 120ms var(--aapm-ease-out);
+  }
+  [data-slot='progress-indicator'] {
+    transition: transform 520ms var(--aapm-ease-emphasis);
+  }
+  [data-slot='slider-thumb'] {
+    transition:
+      scale 140ms var(--aapm-ease-out),
+      box-shadow 200ms var(--aapm-ease-out);
+  }
+  [data-slot='slider-thumb']:hover {
+    scale: 1.12;
+  }
+  [data-slot='slider-thumb']:active {
+    scale: 0.94;
+  }
+  [data-slot='slider-range'] {
+    transition: background-color 150ms var(--aapm-ease-out);
+  }
+  a {
+    transition:
+      color 150ms var(--aapm-ease-out),
+      background-color 150ms var(--aapm-ease-out),
+      text-decoration-color 150ms var(--aapm-ease-out);
+  }
+
+  /* ── Every other trigger / close / step control: eased colours + press squeeze ── */
+  :is(
+    [data-slot='dialog-trigger'],
+    [data-slot='alert-dialog-trigger'],
+    [data-slot='sheet-trigger'],
+    [data-slot='drawer-trigger'],
+    [data-slot='popover-trigger'],
+    [data-slot='dropdown-menu-trigger'],
+    [data-slot='context-menu-trigger'],
+    [data-slot='menubar-trigger'],
+    [data-slot='combobox-trigger'],
+    [data-slot='range-calendar-trigger'],
+    [data-slot='dialog-close'],
+    [data-slot='sheet-close'],
+    [data-slot='drawer-close'],
+    [data-slot='carousel-next'],
+    [data-slot='carousel-previous'],
+    [data-slot='pagination-first'],
+    [data-slot='pagination-last'],
+    [data-slot='pagination-next'],
+    [data-slot='pagination-previous'],
+    [data-slot='range-calendar-next-button'],
+    [data-slot='range-calendar-prev-button'],
+    [data-slot='select-scroll-up-button'],
+    [data-slot='select-scroll-down-button'],
+    [data-slot='message-scroller-button'],
+    [data-slot='sidebar-group-action'],
+    [data-slot='sidebar-menu-action'],
+    [data-slot='card-action'],
+    [data-slot='breadcrumb-link']
+  ) {
+    transition:
+      color 150ms var(--aapm-ease-out),
+      background-color 150ms var(--aapm-ease-out),
+      border-color 150ms var(--aapm-ease-out),
+      opacity 150ms var(--aapm-ease-out),
+      box-shadow 200ms var(--aapm-ease-out),
+      scale 110ms var(--aapm-ease-out);
+  }
+  :is(
+      [data-slot='dialog-trigger'],
+      [data-slot='alert-dialog-trigger'],
+      [data-slot='sheet-trigger'],
+      [data-slot='drawer-trigger'],
+      [data-slot='popover-trigger'],
+      [data-slot='dropdown-menu-trigger'],
+      [data-slot='menubar-trigger'],
+      [data-slot='combobox-trigger'],
+      [data-slot='range-calendar-trigger'],
+      [data-slot='dialog-close'],
+      [data-slot='sheet-close'],
+      [data-slot='drawer-close'],
+      [data-slot='carousel-next'],
+      [data-slot='carousel-previous'],
+      [data-slot='pagination-first'],
+      [data-slot='pagination-last'],
+      [data-slot='pagination-next'],
+      [data-slot='pagination-previous'],
+      [data-slot='range-calendar-next-button'],
+      [data-slot='range-calendar-prev-button'],
+      [data-slot='message-scroller-button'],
+      [data-slot='sidebar-group-action'],
+      [data-slot='sidebar-menu-action']
+    ):not(:disabled):active {
+    scale: 0.94;
+  }
+  [data-slot='hover-card-trigger'],
+  [data-slot='tooltip-trigger'] {
+    transition: color 150ms var(--aapm-ease-out);
+  }
+
+  /* Remaining menu families: context menu, menubar, combobox */
+  :is(
+    [data-slot='context-menu-item'],
+    [data-slot='context-menu-checkbox-item'],
+    [data-slot='context-menu-radio-item'],
+    [data-slot='context-menu-sub-trigger'],
+    [data-slot='menubar-item'],
+    [data-slot='menubar-checkbox-item'],
+    [data-slot='menubar-radio-item'],
+    [data-slot='menubar-sub-trigger'],
+    [data-slot='combobox-item'],
+    [data-slot='item']
+  ) {
+    transition:
+      background-color 120ms var(--aapm-ease-out),
+      color 120ms var(--aapm-ease-out),
+      border-color 120ms var(--aapm-ease-out);
+  }
+  :is(
+      [data-slot='context-menu-checkbox-item'],
+      [data-slot='context-menu-radio-item'],
+      [data-slot='menubar-checkbox-item'],
+      [data-slot='menubar-radio-item']
+    )[data-state='checked']
+    svg,
+  [data-slot='combobox-item-indicator'] svg {
+    animation: aapm-dot-in 240ms var(--aapm-ease-overshoot) backwards;
+  }
+  :is(
+    [data-slot='context-menu-sub-content'],
+    [data-slot='menubar-sub-content'],
+    [data-slot='combobox-list'],
+    [data-slot='navigation-menu-content']
+  )[data-state='open'] {
+    animation: aapm-menu-in 200ms var(--aapm-ease-emphasis) backwards;
+  }
+  :is(
+    [data-slot='context-menu-sub-content'],
+    [data-slot='menubar-sub-content'],
+    [data-slot='combobox-list'],
+    [data-slot='navigation-menu-content']
+  )[data-state='closed'] {
+    animation: aapm-menu-out 110ms var(--aapm-ease-exit) both;
+  }
+  [data-slot='navigation-menu-viewport'] {
+    transition:
+      width 260ms var(--aapm-ease-emphasis),
+      height 260ms var(--aapm-ease-emphasis);
+  }
+  [data-slot='navigation-menu-indicator'] {
+    transition:
+      transform 260ms var(--aapm-ease-emphasis),
+      width 260ms var(--aapm-ease-emphasis),
+      opacity 160ms var(--aapm-ease-out);
+  }
+
+  /* Sheet & drawer: their own slide stays; blur settles as they land */
+  [data-slot='sheet-content'][data-state='open'] {
+    filter: none;
+  }
+  [data-slot='sheet-content'][data-side='right'][data-state='open'],
+  [data-slot='sheet-content'][data-side='left'][data-state='open'] {
+    animation-name: enter, aapm-blur-settle-x;
+    animation-duration: 500ms, 420ms;
+    animation-timing-function: var(--aapm-ease-emphasis), linear;
+  }
+  [data-slot='drawer-content'] {
+    animation: aapm-blur-settle 420ms linear backwards;
+  }
+  [data-slot='drawer-overlay'] {
+    transition: opacity 240ms var(--aapm-ease-out);
+  }
+
+  /* One-time codes: each slot lifts when it becomes active and pops when filled */
+  :is([data-slot='input-otp-slot'], [data-slot='pin-input-slot']) {
+    transition:
+      border-color 150ms var(--aapm-ease-out),
+      box-shadow 200ms var(--aapm-ease-emphasis),
+      translate 160ms var(--aapm-ease-out);
+  }
+  :is([data-slot='input-otp-slot'], [data-slot='pin-input-slot'])[data-active='true'],
+  [data-slot='pin-input-slot']:focus {
+    translate: 0 -1px;
+  }
+  [data-slot='input-otp-slot'] > *:not(:empty),
+  [data-slot='pin-input-slot']:not(:placeholder-shown) {
+    animation: aapm-dot-in 200ms var(--aapm-ease-overshoot) backwards;
+  }
+  :is(
+    [data-slot='input-otp'],
+    [data-slot='pin-input'],
+    [data-slot='native-select'],
+    [data-slot='input-group-control'],
+    [data-slot='form-control']
+  ) {
+    transition:
+      border-color 150ms var(--aapm-ease-out),
+      box-shadow 220ms var(--aapm-ease-emphasis);
+  }
+  [data-slot='input-group']:focus-within {
+    transition: box-shadow 220ms var(--aapm-ease-emphasis);
+  }
+
+  /* Validation messages slide in instead of popping */
+  :is([data-slot='field-error'], [data-slot='form-message']) {
+    animation: aapm-fade-up 220ms var(--aapm-ease-emphasis) backwards;
+  }
+
+  /* Conversation, empty states, markers */
+  :is([data-slot='message'], [data-slot='bubble']) {
+    animation: aapm-fade-up 320ms var(--aapm-ease-emphasis) backwards;
+  }
+  [data-slot='bubble-reactions'] > * {
+    transition: scale 120ms var(--aapm-ease-out);
+  }
+  [data-slot='bubble-reactions'] > *:active {
+    scale: 0.9;
+  }
+  :is([data-slot='empty-content'], [data-slot='marker-content']) {
+    animation: aapm-fade-up 320ms var(--aapm-ease-emphasis) backwards;
+  }
+
+  /* Resizable panels and custom scrollbars */
+  [data-slot='resizable-handle'] {
+    transition: background-color 150ms var(--aapm-ease-out);
+  }
+  [data-slot='resizable-handle'] > div {
+    transition: scale 150ms var(--aapm-ease-out);
+  }
+  [data-slot='resizable-handle']:hover > div,
+  [data-slot='resizable-handle'][data-resize-handle-state='drag'] > div {
+    scale: 1.2;
+  }
+  [data-slot='scroll-area-scrollbar'] {
+    transition: opacity 200ms var(--aapm-ease-out);
+  }
+  [data-slot='scroll-area-thumb'] {
+    transition: background-color 150ms var(--aapm-ease-out);
+  }
+  [data-slot='sidebar-rail'] {
+    transition: background-color 150ms var(--aapm-ease-out);
+  }
+}
+
+@keyframes aapm-blur-settle-x {
+  0% {
+    filter: url(#aapm-mb-x-3);
+  }
+  14% {
+    filter: url(#aapm-mb-x-2);
+  }
+  32% {
+    filter: url(#aapm-mb-x-1);
+  }
+  55%,
+  100% {
+    filter: none;
+  }
+}
+
+/* ── Keyframes ─────────────────────────────────────────────────────────────── */
+@keyframes aapm-pop-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.97);
+    filter: url(#aapm-mb-y-4);
+  }
+  12% {
+    filter: url(#aapm-mb-y-3);
+  }
+  26% {
+    filter: url(#aapm-mb-y-2);
+  }
+  42% {
+    filter: url(#aapm-mb-y-1);
+  }
+  60%,
+  100% {
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes aapm-pop-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.985);
+  }
+}
+@keyframes aapm-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes aapm-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes aapm-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0);
+  }
+}
+@keyframes aapm-blur-settle {
+  0% {
+    filter: url(#aapm-mb-y-3);
+  }
+  14% {
+    filter: url(#aapm-mb-y-2);
+  }
+  32% {
+    filter: url(#aapm-mb-y-1);
+  }
+  55%,
+  100% {
+    filter: none;
+  }
+}
+/* `translate` (not transform) so the shake composes with sonner's own transform */
+@keyframes aapm-shake-x {
+  0%,
+  100% {
+    translate: 0 0;
+    animation-timing-function: ease-in-out;
+  }
+  15% {
+    translate: -6px 0;
+  }
+  30% {
+    translate: 5px 0;
+  }
+  45% {
+    translate: -4px 0;
+  }
+  60% {
+    translate: 3px 0;
+  }
+  75% {
+    translate: -1.5px 0;
+  }
+}
+@keyframes aapm-menu-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--aapm-from-x, 0px), var(--aapm-from-y, -4px), 0) scale(0.98);
+    filter: url(#aapm-mb-y-2);
+  }
+  25% {
+    filter: url(#aapm-mb-y-1);
+  }
+  50%,
+  100% {
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes aapm-menu-out {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+@keyframes aapm-dot-in {
+  0% {
+    scale: 0;
+    opacity: 0;
+  }
+  60% {
+    scale: 1.18;
+    opacity: 1;
+  }
+  100% {
+    scale: 1;
+  }
+}
+@keyframes aapm-dot-out {
+  to {
+    scale: 0;
+    opacity: 0;
+  }
+}
+@keyframes aapm-check-draw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes aapm-collapse-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--reka-collapsible-content-height);
+    opacity: 1;
+  }
+}
+@keyframes aapm-collapse-up {
+  from {
+    height: var(--reka-collapsible-content-height);
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+/* ── Sliding tab indicator (plugins/motion/setup.ts) ─────────────────────────
+ * Structural, so outside the reduced-motion gate; only its transition is gated.
+ * It takes over the active trigger's shadcn look (bg-background + shadow-sm). */
+[data-aapm-tabs] {
+  position: relative;
+  isolation: isolate;
+}
+[data-aapm-tab-indicator] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--background);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+  pointer-events: none;
+}
+.dark [data-aapm-tab-indicator] {
+  background: color-mix(in oklab, var(--input) 30%, transparent);
+  outline: 1px solid var(--input);
+  outline-offset: -1px;
+}
+[data-aapm-tabs] > [data-slot='tabs-trigger'][data-state='active'] {
+  background: transparent;
+  box-shadow: none;
+  border-color: transparent;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-aapm-tab-indicator] {
+    transition:
+      translate 320ms var(--aapm-ease-emphasis),
+      width 320ms var(--aapm-ease-emphasis),
+      height 320ms var(--aapm-ease-emphasis),
+      opacity 150ms var(--aapm-ease-out);
+  }
+}

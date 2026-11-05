@@ -2,9 +2,10 @@ import { h } from 'vue'
 
 import type { DataTableColumnDef } from '@/components/data-table'
 
+import ToneChip from '@/components/aapm/tone/tone-chip.vue'
+import { toneOf } from '@/components/aapm/tone/tones'
 import { createSelectColumn, DataTableColumnHeader } from '@/components/data-table'
 import { Copy } from '@/components/prop-ui/copy'
-import Badge from '@/components/ui/badge/Badge.vue'
 
 import type { User } from '../data/schema'
 
@@ -51,7 +52,7 @@ export const columns: DataTableColumnDef<User>[] = [
       if (!callType)
         return null
 
-      return h(Badge, { class: `${callType.style || ''}`, variant: 'outline' }, () => callType.label)
+      return h(ToneChip, { tone: toneOf('user', callType.value), dot: true }, () => callType.label)
     },
     filterFn: 'arrHas',
     enableResizing: true,
@@ -68,10 +69,7 @@ export const columns: DataTableColumnDef<User>[] = [
       if (!priority)
         return null
 
-      return h('div', { class: 'flex items-center' }, [
-        priority.icon && h(priority.icon, { class: 'mr-2 h-4 w-4 text-muted-foreground' }),
-        h('span', {}, priority.label),
-      ])
+      return h(ToneChip, { tone: toneOf('role', priority.value), icon: priority.icon, variant: 'outline' }, () => priority.label)
     },
     enableSorting: false,
     enableResizing: true,

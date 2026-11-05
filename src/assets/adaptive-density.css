@@ -1,0 +1,53 @@
+/* Compact workspaces follow the available CSS viewport, which already accounts for
+ * Windows display scaling and browser zoom. Text and user zoom retain their size.
+ * Colour themes keep their own semantic values; density is shared by every theme. */
+@media (min-width: 48rem) and (max-height: 48rem) {
+  :root {
+    --spacing: 0.21875rem;
+    --layout-sidebar-width: 14rem;
+    --chart-trend-height: clamp(12rem, 38dvh, 16rem);
+    --kpi-value-hero: 2.25rem;
+    --kpi-value-tile: 1.625rem;
+    --kpi-hero-min: 16rem;
+  }
+
+  [data-aapm-auth] > main {
+    padding-block: calc(var(--spacing) * 4);
+  }
+  [data-aapm-auth] [data-slot='card'] {
+    gap: calc(var(--spacing) * 4);
+    padding-block: calc(var(--spacing) * 5);
+  }
+
+  [data-slot='dialog-content'],
+  [data-slot='alert-dialog-content'] {
+    max-height: calc(100dvh - var(--spacing) * 8);
+    overflow-y: auto;
+  }
+
+  [data-slot='sheet-content'] {
+    overflow-y: auto;
+  }
+
+  [data-slot='popover-content'] {
+    max-height: min(var(--reka-popover-content-available-height, 100dvh), calc(100dvh - var(--spacing) * 8));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  [data-slot='input'],
+  [data-slot='button'] {
+    min-height: 2rem;
+  }
+}
+
+/* Keyboard focus can always scroll past either sticky toolbar. */
+html {
+  scroll-padding-top: calc(var(--topbar-height) * 2 + var(--spacing) * 4);
+}
+
+/* Sidebar width follows the density layer without editing components/ui: the stock
+ * SidebarProvider sets --sidebar-width inline, so this override needs !important. */
+[data-slot='sidebar-wrapper'] {
+  --sidebar-width: var(--layout-sidebar-width, 16rem) !important;
+}

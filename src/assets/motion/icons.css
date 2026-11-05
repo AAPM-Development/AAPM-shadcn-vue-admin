@@ -1,0 +1,1554 @@
+/*
+ * Animated action icons — Lottie-style choreography per icon part.
+ *
+ * Who plays them:
+ * - plugins/motion/action-icons.module.ts tags every Lucide svg inside a button / link / menu item
+ *   (`data-action` + `data-aapm-auto`) and sets `data-playing="true"` on hover (press on touch).
+ * - <AnimatedIcon> / <AapmIcon animate> (components/aapm/icon/animated) drives the same attribute
+ *   from `play` or a press, plus its extras: copy → check swap, refresh loading loop, delete tear.
+ *
+ * Grammar: anticipation (small counter-move) → action (the meaning) → overshoot → settle.
+ * Parts are addressed with :nth-child() in Lucide 1.x child order (noted per rule) and use
+ * transform-box: fill-box, so origins are relative to the part. The root svg only gets rotate /
+ * scale, so a consumer's `translate` utility keeps working. Transform, opacity and
+ * stroke-dashoffset only. Icon choreographies run up to 720ms (never blocking input); the
+ * <AnimatedIcon> end detection listens for the keyframes named in animated/actions.ts, so that
+ * name is always on the longest-running part.
+ * Easing tokens: --aapm-ease-out / -emphasis / -overshoot / -exit (tokens/primitives.css).
+ */
+
+/* State, not motion: an open chevron points up under reduced motion too. */
+svg[data-action='chevronDown'][data-open='true'] {
+  rotate: 180deg;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  svg[data-action] * {
+    transform-box: fill-box;
+  }
+
+  /* ── Delete — trash (1–2 bars, 3 body, 4 lid, 5 handle) ──────────────────────
+   * The lid + handle crouch, pop up hinged at the lid's right end (21,6), hang, then slam shut;
+   * the body squashes on the slam and the bars drop as if something fell in. */
+  svg[data-action='delete'] path:nth-child(4) {
+    transform-origin: 100% 0; /* fill-box (3,6)…(21,6) → (21,6) */
+  }
+  svg[data-action='delete'] path:nth-child(5) {
+    transform-origin: 13px 4px; /* fill-box (8,2)…(16,6) → (21,6) */
+  }
+  svg[data-action='delete'] path:nth-child(3) {
+    transform-origin: 50% 100%;
+  }
+  :is(svg[data-action='delete'][data-aapm-auto][data-playing='true'], svg[data-action='delete'][data-hover='true'])
+    > path:is(:nth-child(4), :nth-child(5)) {
+    animation: aapm-icon-delete-lid 680ms var(--aapm-ease-out) both;
+  }
+  :is(svg[data-action='delete'][data-aapm-auto][data-playing='true'], svg[data-action='delete'][data-hover='true'])
+    > path:nth-child(3) {
+    animation: aapm-icon-delete-body 680ms var(--aapm-ease-out) both;
+  }
+  :is(svg[data-action='delete'][data-aapm-auto][data-playing='true'], svg[data-action='delete'][data-hover='true'])
+    > path:is(:nth-child(1), :nth-child(2)) {
+    animation: aapm-icon-delete-bars 680ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='delete'][data-aapm-auto][data-playing='true'] > path:nth-child(2) {
+    animation-delay: 40ms;
+  }
+  /* <AnimatedIcon play> on confirm: the bin tears — two half-width copies split and rejoin. */
+  svg[data-action='delete']:not([data-aapm-auto])[data-playing='true'] > path {
+    opacity: 0;
+  }
+  svg[data-action='delete'] > g[data-part] {
+    transform-box: view-box;
+    transform-origin: 12px 22px;
+    animation: aapm-icon-delete 380ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='delete'] > g[data-part='tear-left'] {
+    --aapm-tear-x: -1px;
+    --aapm-tear-turn: -4deg;
+  }
+  svg[data-action='delete'] > g[data-part='tear-right'] {
+    --aapm-tear-x: 1px;
+    --aapm-tear-turn: 4deg;
+  }
+
+  /* ── Edit — pencil (1 body, 2 ferrule line): the pencil scribbles a short zig-zag ── */
+  svg[data-action='edit'][data-playing='true'] {
+    transform-origin: 10% 90%;
+    animation: aapm-icon-edit 640ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Add — plus: winds back, spins a quarter turn with a pop ───────────────── */
+  svg[data-action='add'][data-playing='true'] {
+    animation: aapm-icon-add 520ms var(--aapm-ease-out) both;
+  }
+
+  /* ── View — eye (1 outline, 2 pupil): blinks, then the pupil glances left and right ── */
+  svg[data-action='view'][data-playing='true'] {
+    transform-origin: 50% 50%;
+    animation: aapm-icon-view-blink 640ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='view'][data-playing='true'] > circle {
+    animation: aapm-icon-view 640ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Search — magnifier: the lens sweeps a small circle, like looking around ── */
+  svg[data-action='search'][data-playing='true'] > * {
+    animation: aapm-icon-search 640ms var(--aapm-ease-out) both;
+  }
+
+  /* ── More — ellipsis (1 centre, 2 right, 3 left): the dots wave left → right ── */
+  svg[data-action='more'][data-playing='true'] > circle {
+    animation: aapm-icon-more 520ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='more'][data-playing='true'] > circle:nth-child(1) {
+    animation-delay: 70ms;
+  }
+  svg[data-action='more'][data-playing='true'] > circle:nth-child(2) {
+    animation-delay: 140ms;
+  }
+
+  /* ── Settings — gear: winds back, turns 120° and settles past its mark ──────── */
+  svg[data-action='settings'][data-playing='true'] {
+    animation: aapm-icon-settings 720ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Log out — (1 head, 2 shaft, 3 door): the arrow leaves through the door and comes back ── */
+  svg[data-action='logout'][data-playing='true'] > :is(:nth-child(1), :nth-child(2)) {
+    animation: aapm-icon-logout 620ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='logout'][data-playing='true'] > :nth-child(3) {
+    transform-origin: 0 50%;
+    animation: aapm-icon-logout-door 620ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Archive — (1 lid, 2 box, 3 slot): the lid lifts off and drops back on; the box takes it ── */
+  svg[data-action='archive'][data-playing='true'] > rect:nth-child(1) {
+    transform-origin: 0 100%;
+    animation: aapm-icon-archive 640ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='archive'][data-playing='true'] > :is(:nth-child(2), :nth-child(3)) {
+    transform-origin: 50% 100%;
+    animation: aapm-icon-archive-box 640ms var(--aapm-ease-out) both;
+  }
+
+  /* ── History / reopen — the clock (or arrow) rewinds a full turn ────────────── */
+  svg:is([data-action='history'], [data-action='reopen'])[data-playing='true'] {
+    animation: aapm-icon-history 700ms var(--aapm-ease-emphasis) both;
+  }
+
+  /* ── Reverse — undo-2 (1 head, 2 tail): the arrow pulls back then springs home ── */
+  svg[data-action='reverse'][data-playing='true'] {
+    transform-origin: 30% 40%;
+    animation: aapm-icon-reverse 560ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Attach — paperclip: swings from its top like it was just clipped on ───── */
+  svg[data-action='attach'][data-playing='true'] {
+    transform-origin: 70% 10%;
+    animation: aapm-icon-attach 640ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Comment — message bubble: pops from its tail with a little wobble ──────── */
+  svg[data-action='comment'][data-playing='true'] {
+    transform-origin: 10% 95%;
+    animation: aapm-icon-comment 560ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Calendar — (1–2 rings, 3 page, 4 header line): rings hop, the page settles ── */
+  svg[data-action='calendar'][data-playing='true'] > :is(:nth-child(1), :nth-child(2)) {
+    animation: aapm-icon-calendar-ring 520ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='calendar'][data-playing='true'] > :nth-child(2) {
+    animation-delay: 60ms;
+  }
+  svg[data-action='calendar'][data-playing='true'] > :is(:nth-child(3), :nth-child(4)) {
+    transform-origin: 50% 100%;
+    animation: aapm-icon-calendar 560ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Locked — lock-keyhole (1 keyhole, 2 body, 3 shackle): shackle tugs up and snaps down;
+   * the body rattles; the keyhole blinks. Reads "this stays locked". */
+  svg[data-action='locked'][data-playing='true'] > :nth-child(3) {
+    animation: aapm-icon-locked-shackle 620ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='locked'][data-playing='true'] {
+    animation: aapm-icon-locked 620ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='locked'][data-playing='true'] > :nth-child(1) {
+    transform-origin: 50% 50%;
+    animation: aapm-icon-locked-key 620ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Reject — x: a quick shake that ends in a quarter-turn snap ───────────── */
+  svg[data-action='reject'][data-playing='true'] {
+    animation: aapm-icon-reject 480ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Like — thumbs-up: crouches, nods from the wrist with a pop ────────────── */
+  svg[data-action='like'][data-playing='true'] {
+    transform-origin: 30% 85%;
+    animation: aapm-icon-like 560ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Copy / duplicate — the rect is the front sheet: tucks onto the back sheet, then slides
+   * out to make two. Selected by element type, not position, so copy (rect, path) and
+   * copy-plus / duplicate (line, line, rect, path) both move; the plus then pops in. */
+  svg[data-action='copy'][data-playing='true'] > rect {
+    animation: aapm-icon-copy 420ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='copy'][data-playing='true'] > path:last-child {
+    animation: aapm-icon-copy-back 420ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='copy'][data-playing='true'] > line {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: aapm-part-form 300ms var(--aapm-ease-overshoot) 240ms both;
+  }
+  /* …then (AnimatedIcon) the glyph is the approve check for 1.2s, drawing itself. */
+  svg[data-action='copy'][data-swapped='true'] > path:nth-child(1),
+  svg[data-action='approve'][data-playing='true'] > path:last-child {
+    stroke-dasharray: 24;
+    animation: aapm-icon-approve 380ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='approve'][data-playing='true'] {
+    animation: aapm-icon-approve-pop 420ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Share — share-2: the graph flies out up-right and re-enters from the bottom-left ── */
+  svg[data-action='share'][data-playing='true'] > * {
+    animation: aapm-icon-share 520ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Refresh — one turn with overshoot on press; a steady linear loop while loading ── */
+  svg[data-action='refresh'][data-playing='true'] {
+    animation: aapm-icon-refresh 620ms var(--aapm-ease-emphasis) both;
+  }
+  svg[data-action='refresh'][data-loop='true'] {
+    animation-duration: 900ms;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  /* ── Print — (1 tray top, 2 body, 3 paper): the printer hums, the paper feeds out ── */
+  svg[data-action='print'][data-playing='true'] > rect:nth-child(3) {
+    animation: aapm-icon-print 620ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='print'][data-playing='true'] {
+    animation: aapm-icon-print-hum 620ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Save — the disk presses down into storage and springs back ───────────── */
+  svg[data-action='save'][data-playing='true'] {
+    transform-origin: 50% 90%;
+    animation: aapm-icon-save 520ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Download — (1 shaft, 2 tray, 3 head): the arrow drops into the tray, which takes the hit ── */
+  svg[data-action='download'][data-playing='true'] > :is(:nth-child(1), :nth-child(3)) {
+    animation: aapm-icon-download 620ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='download'][data-playing='true'] > :nth-child(2) {
+    transform-origin: 50% 100%;
+    animation: aapm-icon-tray 620ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Upload — (1 shaft, 2 head, 3 tray): the tray pushes, the arrow launches up ── */
+  svg[data-action='upload'][data-playing='true'] > :is(:nth-child(1), :nth-child(2)) {
+    animation: aapm-icon-upload 620ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='upload'][data-playing='true'] > :nth-child(3) {
+    transform-origin: 50% 100%;
+    animation: aapm-icon-tray 620ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Export — file-down: (3 shaft, 4 head) travel down out of the sheet ─────── */
+  svg[data-action='export'][data-playing='true'] > :is(:nth-child(3), :nth-child(4)) {
+    animation: aapm-icon-export 620ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Notification — bell (1 clapper, 2 bell): the bell swings, the clapper lags behind ── */
+  svg[data-action='notification'][data-playing='true'] {
+    transform-origin: 50% 8%;
+    animation: aapm-icon-notification 680ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='notification'][data-playing='true'] > :nth-child(1) {
+    animation: aapm-icon-clapper 680ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Filter — funnel: squeezes like something is poured through it ───────── */
+  svg[data-action='filter'][data-playing='true'] > path:nth-child(1) {
+    transform-origin: 50% 0;
+    animation: aapm-icon-filter 560ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Sort — arrow-up-down (1–2 down arrow, 3–4 up arrow): the arrows trade places ── */
+  svg[data-action='sort'][data-playing='true'] > :is(:nth-child(1), :nth-child(2)) {
+    animation: aapm-icon-sort 560ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='sort'][data-playing='true'] > :is(:nth-child(3), :nth-child(4)) {
+    animation: aapm-icon-sort-down 560ms var(--aapm-ease-out) both;
+  }
+
+  /* ── Chevron — opening turns with a slight overshoot; closing eases back. */
+  svg[data-action='chevronDown'][data-playing='true'] {
+    animation: aapm-icon-chevronDown 260ms var(--aapm-ease-overshoot) both;
+  }
+  svg[data-action='chevronDown'][data-open='false'] {
+    transition: rotate 200ms var(--aapm-ease-out);
+  }
+
+  /* ── Submit — send: pulls back (anticipation), flies out up-right, re-enters ─── */
+  svg[data-action='submit'][data-playing='true'] > * {
+    animation: aapm-icon-submit 620ms var(--aapm-ease-out) both;
+  }
+}
+
+/* ═══ Keyframes ════════════════════════════════════════════════════════════ */
+
+@keyframes aapm-icon-delete-lid {
+  0% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  16% {
+    translate: 0 0.6px;
+    rotate: 0deg;
+  }
+  42% {
+    translate: 0 -2.5px;
+    rotate: 18deg;
+    animation-timing-function: var(--aapm-ease-emphasis);
+  }
+  62% {
+    translate: 0 -2px;
+    rotate: 14deg;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  78% {
+    translate: 0 0.5px;
+    rotate: -2deg;
+  }
+  90% {
+    translate: 0 -0.3px;
+    rotate: 1deg;
+  }
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+@keyframes aapm-icon-delete-body {
+  0%,
+  70% {
+    scale: 1;
+  }
+  80% {
+    scale: 1.06 0.92;
+  }
+  92% {
+    scale: 0.98 1.02;
+  }
+  100% {
+    scale: 1;
+  }
+}
+@keyframes aapm-icon-delete-bars {
+  0%,
+  40% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  58% {
+    translate: 0 1.5px;
+    opacity: 0.4;
+  }
+  80% {
+    translate: 0 -0.5px;
+    opacity: 1;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+/* Tear (AnimatedIcon confirm) */
+@keyframes aapm-icon-delete {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  35%,
+  60% {
+    translate: var(--aapm-tear-x) 0;
+    rotate: var(--aapm-tear-turn);
+  }
+}
+
+@keyframes aapm-icon-edit {
+  0% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  14% {
+    rotate: -12deg;
+    translate: 0 0;
+  }
+  30% {
+    rotate: -6deg;
+    translate: 1.5px 0.5px;
+  }
+  46% {
+    rotate: -12deg;
+    translate: -0.5px 1px;
+  }
+  62% {
+    rotate: -6deg;
+    translate: 1.5px 1.2px;
+  }
+  80% {
+    rotate: 3deg;
+    translate: 0 0;
+  }
+  100% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+}
+
+@keyframes aapm-icon-add {
+  0% {
+    rotate: 0deg;
+    scale: 1;
+  }
+  20% {
+    rotate: -20deg;
+    scale: 0.82;
+  }
+  65% {
+    rotate: 100deg;
+    scale: 1.14;
+  }
+  85% {
+    rotate: 86deg;
+    scale: 0.98;
+  }
+  100% {
+    rotate: 90deg;
+    scale: 1;
+  }
+}
+
+@keyframes aapm-icon-view-blink {
+  0%,
+  100% {
+    scale: 1;
+  }
+  14% {
+    scale: 1 0.08;
+    animation-timing-function: var(--aapm-ease-out);
+  }
+  30% {
+    scale: 1 1.06;
+  }
+  40% {
+    scale: 1;
+  }
+}
+@keyframes aapm-icon-view {
+  0%,
+  36% {
+    translate: 0 0;
+  }
+  54% {
+    translate: -1.6px 0;
+  }
+  76% {
+    translate: 1.6px 0;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+@keyframes aapm-icon-search {
+  0% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  25% {
+    translate: -1.5px -1px;
+    rotate: -8deg;
+  }
+  50% {
+    translate: 1px -1.5px;
+    rotate: 4deg;
+  }
+  75% {
+    translate: 1.2px 0.8px;
+    rotate: 6deg;
+  }
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+
+@keyframes aapm-icon-more {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  35% {
+    translate: 0 -3px;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  70% {
+    translate: 0 0.6px;
+  }
+}
+
+@keyframes aapm-icon-settings {
+  0% {
+    rotate: 0deg;
+  }
+  18% {
+    rotate: -24deg;
+  }
+  78% {
+    rotate: 372deg;
+  }
+  100% {
+    rotate: 360deg;
+  }
+}
+
+@keyframes aapm-icon-logout {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  15% {
+    translate: -1.5px 0;
+    opacity: 1;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  45% {
+    translate: 6px 0;
+    opacity: 0;
+  }
+  46% {
+    translate: -4px 0;
+    opacity: 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes aapm-icon-logout-door {
+  0%,
+  100% {
+    scale: 1;
+  }
+  40% {
+    scale: 0.88 1;
+  }
+  70% {
+    scale: 1.04 1;
+  }
+}
+
+@keyframes aapm-icon-archive {
+  0% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  15% {
+    translate: 0 0.5px;
+  }
+  45% {
+    translate: 0 -3px;
+    rotate: -10deg;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  75% {
+    translate: 0 0.5px;
+    rotate: 1deg;
+  }
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+@keyframes aapm-icon-archive-box {
+  0%,
+  68% {
+    scale: 1;
+  }
+  80% {
+    scale: 1.05 0.92;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes aapm-icon-history {
+  0% {
+    rotate: 0deg;
+  }
+  15% {
+    rotate: 20deg;
+  }
+  85% {
+    rotate: -372deg;
+  }
+  100% {
+    rotate: -360deg;
+  }
+}
+
+@keyframes aapm-icon-reverse {
+  0%,
+  100% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  30% {
+    rotate: -22deg;
+    translate: -1.5px 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  70% {
+    rotate: 4deg;
+    translate: 0.4px 0;
+  }
+}
+
+@keyframes aapm-icon-attach {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  20% {
+    rotate: 18deg;
+  }
+  45% {
+    rotate: -12deg;
+  }
+  70% {
+    rotate: 6deg;
+  }
+  86% {
+    rotate: -2deg;
+  }
+}
+
+@keyframes aapm-icon-comment {
+  0% {
+    scale: 1;
+    rotate: 0deg;
+  }
+  20% {
+    scale: 0.84;
+    rotate: 0deg;
+  }
+  50% {
+    scale: 1.12;
+    rotate: -6deg;
+  }
+  72% {
+    scale: 0.98;
+    rotate: 3deg;
+  }
+  100% {
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+
+@keyframes aapm-icon-calendar-ring {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  35% {
+    translate: 0 -2px;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  65% {
+    translate: 0 0.5px;
+  }
+}
+@keyframes aapm-icon-calendar {
+  0%,
+  100% {
+    scale: 1;
+  }
+  45% {
+    scale: 1.04 0.94;
+  }
+  70% {
+    scale: 0.98 1.02;
+  }
+}
+
+@keyframes aapm-icon-locked-shackle {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  25% {
+    translate: 0 -2.2px;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  42% {
+    translate: 0 0.4px;
+  }
+  55% {
+    translate: 0 0;
+  }
+}
+@keyframes aapm-icon-locked {
+  0%,
+  40%,
+  100% {
+    rotate: 0deg;
+  }
+  50% {
+    rotate: -8deg;
+  }
+  62% {
+    rotate: 6deg;
+  }
+  74% {
+    rotate: -3deg;
+  }
+  86% {
+    rotate: 1deg;
+  }
+}
+@keyframes aapm-icon-locked-key {
+  0%,
+  45%,
+  100% {
+    scale: 1;
+    opacity: 1;
+  }
+  60% {
+    scale: 1.6;
+    opacity: 0.5;
+  }
+}
+
+@keyframes aapm-icon-reject {
+  0% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  15% {
+    translate: -1.5px 0;
+  }
+  30% {
+    translate: 1.5px 0;
+  }
+  45% {
+    translate: -1px 0;
+    rotate: 0deg;
+  }
+  80% {
+    translate: 0 0;
+    rotate: 96deg;
+  }
+  100% {
+    rotate: 90deg;
+  }
+}
+
+@keyframes aapm-icon-like {
+  0% {
+    rotate: 0deg;
+    scale: 1;
+    translate: 0 0;
+  }
+  18% {
+    rotate: 6deg;
+    scale: 0.9;
+    translate: 0 0.5px;
+  }
+  48% {
+    rotate: -18deg;
+    scale: 1.16;
+    translate: 0 -1px;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    rotate: 0deg;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes aapm-icon-copy {
+  0% {
+    translate: 0 0;
+  }
+  18% {
+    translate: 1px 1px;
+  }
+  50% {
+    translate: -6px -6px;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+@keyframes aapm-icon-copy-back {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes aapm-icon-approve {
+  from {
+    stroke-dashoffset: 25;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes aapm-icon-approve-pop {
+  0% {
+    scale: 0.8;
+  }
+  60% {
+    scale: 1.14;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes aapm-icon-share {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  14% {
+    translate: -1.5px 1.5px;
+    opacity: 1;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  44% {
+    translate: 10px -10px;
+    opacity: 0;
+  }
+  45% {
+    translate: -10px 10px;
+    opacity: 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+@keyframes aapm-icon-refresh {
+  0% {
+    rotate: 0deg;
+  }
+  15% {
+    rotate: -18deg;
+  }
+  85% {
+    rotate: 372deg;
+  }
+  100% {
+    rotate: 360deg;
+  }
+}
+/* The loading loop reuses the name with linear timing: a pure turn reads better there. */
+svg[data-action='refresh'][data-loop='true'] {
+  animation-name: aapm-icon-refresh-loop;
+}
+@keyframes aapm-icon-refresh-loop {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes aapm-icon-print {
+  0%,
+  20% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  40% {
+    translate: 0 -5px;
+    opacity: 0;
+  }
+  41% {
+    translate: 0 -5px;
+    opacity: 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes aapm-icon-print-hum {
+  0%,
+  50%,
+  100% {
+    translate: 0 0;
+  }
+  8%,
+  24% {
+    translate: 0.4px 0;
+  }
+  16%,
+  32% {
+    translate: -0.4px 0;
+  }
+}
+
+@keyframes aapm-icon-save {
+  0% {
+    scale: 1;
+    translate: 0 0;
+  }
+  35% {
+    scale: 1.08 0.84;
+    translate: 0 1px;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  70% {
+    scale: 0.97 1.04;
+    translate: 0 -0.5px;
+  }
+  100% {
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes aapm-icon-download {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  14% {
+    translate: 0 -1.5px;
+    opacity: 1;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  42% {
+    translate: 0 6px;
+    opacity: 0;
+  }
+  43% {
+    translate: 0 -7px;
+    opacity: 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes aapm-icon-tray {
+  0%,
+  30%,
+  100% {
+    scale: 1;
+  }
+  42% {
+    scale: 1.06 0.8;
+  }
+  60% {
+    scale: 0.98 1.05;
+  }
+}
+
+@keyframes aapm-icon-upload {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  14% {
+    translate: 0 1.5px;
+    opacity: 1;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  42% {
+    translate: 0 -7px;
+    opacity: 0;
+  }
+  43% {
+    translate: 0 7px;
+    opacity: 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+@keyframes aapm-icon-export {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  14% {
+    translate: 0 -1px;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  42% {
+    translate: 0 4px;
+    opacity: 0;
+  }
+  43% {
+    translate: 0 -4px;
+    opacity: 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+@keyframes aapm-icon-notification {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  12% {
+    rotate: 16deg;
+  }
+  30% {
+    rotate: -14deg;
+  }
+  48% {
+    rotate: 9deg;
+  }
+  66% {
+    rotate: -5deg;
+  }
+  84% {
+    rotate: 2deg;
+  }
+}
+@keyframes aapm-icon-clapper {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  18% {
+    translate: -1.5px 0;
+  }
+  36% {
+    translate: 1.5px 0;
+  }
+  54% {
+    translate: -1px 0;
+  }
+  72% {
+    translate: 0.5px 0;
+  }
+}
+
+@keyframes aapm-icon-filter {
+  0% {
+    scale: 1;
+    rotate: 0deg;
+  }
+  30% {
+    scale: 1.1 0.76;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  60% {
+    scale: 0.94 1.08;
+    rotate: 4deg;
+  }
+  80% {
+    rotate: -2deg;
+  }
+  100% {
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+
+@keyframes aapm-icon-sort {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  45% {
+    translate: 0 3px;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+}
+@keyframes aapm-icon-sort-down {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  45% {
+    translate: 0 -3px;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+}
+
+@keyframes aapm-icon-chevronDown {
+  from {
+    rotate: 0deg;
+  }
+  to {
+    rotate: 180deg;
+  }
+}
+
+@keyframes aapm-icon-submit {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  16% {
+    translate: -2px 2px;
+    opacity: 1;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  46% {
+    translate: 11px -11px;
+    opacity: 0;
+  }
+  47% {
+    translate: -10px 10px;
+    opacity: 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+/* ═══ Archetypes — navigation, sidebar and farm glyphs ══════════════════════
+ * action-icons.module.ts maps every other Lucide / livestock glyph to one of these by meaning
+ * (ICON_ACTIONS, FARM_ACTIONS). Parts stagger by child order, so they fit any glyph shape. */
+@media (prefers-reduced-motion: no-preference) {
+  /* tiles — dashboard / grid / boxes / egg tray: each part pops in turn */
+  svg[data-action='tiles'][data-playing='true'] > * {
+    transform-origin: 50% 50%;
+    animation: aapm-icon-tile 520ms var(--aapm-ease-out) both;
+  }
+  /* list — todo / document / ledger: rows slide in, one after another */
+  svg[data-action='list'][data-playing='true'] > * {
+    animation: aapm-icon-list 480ms var(--aapm-ease-out) both;
+  }
+  /* people — users: heads hop in turn */
+  svg[data-action='people'][data-playing='true'] > * {
+    animation: aapm-icon-hop 480ms var(--aapm-ease-out) both;
+  }
+  /* hop — chick, droplets, thermometer: the glyph hops and lands with a squash */
+  svg[data-action='hop'][data-playing='true'] {
+    transform-origin: 50% 100%;
+    animation: aapm-icon-hop-squash 560ms var(--aapm-ease-out) both;
+  }
+  /* sparkle — AI: twinkles and turns; the small stars pop */
+  svg[data-action='sparkle'][data-playing='true'] {
+    animation: aapm-icon-sparkle 600ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='sparkle'][data-playing='true'] > :not(:first-child) {
+    transform-origin: 50% 50%;
+    animation: aapm-icon-tile 520ms var(--aapm-ease-out) 120ms both;
+  }
+  /* shield — shield-check / badge-check: pops, the check draws itself */
+  svg[data-action='shield'][data-playing='true'] {
+    animation: aapm-icon-approve-pop 460ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='shield'][data-playing='true'] > :last-child {
+    stroke-dasharray: 14;
+    animation: aapm-icon-shield-check 420ms var(--aapm-ease-out) 80ms both;
+  }
+  /* wiggle — bug, palette, money, vaccine: a decaying wiggle */
+  svg[data-action='wiggle'][data-playing='true'] {
+    transform-origin: 50% 50%;
+    animation: aapm-icon-wiggle 560ms var(--aapm-ease-out) both;
+  }
+  /* bounce — package, cart, truck, warehouse, coop: hops, lands with a squash */
+  svg[data-action='bounce'][data-playing='true'] {
+    transform-origin: 50% 100%;
+    animation: aapm-icon-bounce 560ms var(--aapm-ease-out) both;
+  }
+  /* pin — map pin, target: lifts and drops into place */
+  svg[data-action='pin'][data-playing='true'] {
+    transform-origin: 50% 100%;
+    animation: aapm-icon-pin 600ms var(--aapm-ease-out) both;
+  }
+  /* quarter — pie, sun, fan: winds back, turns a quarter with overshoot */
+  svg[data-action='quarter'][data-playing='true'] {
+    animation: aapm-icon-quarter 600ms var(--aapm-ease-out) both;
+  }
+  /* swap — arrow-left-right: the two arrows trade sides */
+  svg[data-action='swap'][data-playing='true'] > :is(:nth-child(1), :nth-child(2)) {
+    animation: aapm-icon-swap-a 520ms var(--aapm-ease-out) both;
+  }
+  svg[data-action='swap'][data-playing='true'] > :is(:nth-child(3), :nth-child(4)) {
+    animation: aapm-icon-swap-b 520ms var(--aapm-ease-out) both;
+  }
+  /* help — question / info: a curious head tilt */
+  svg[data-action='help'][data-playing='true'] {
+    transform-origin: 50% 80%;
+    animation: aapm-icon-help 560ms var(--aapm-ease-out) both;
+  }
+  /* nudge — external link, log in, trend: points the way and comes back */
+  svg[data-action='nudge'][data-playing='true'] {
+    animation: aapm-icon-nudge 480ms var(--aapm-ease-out) both;
+  }
+  /* rock — moon, egg, wheat, scale: rocks on its base */
+  svg[data-action='rock'][data-playing='true'] {
+    transform-origin: 50% 90%;
+    animation: aapm-icon-rock 640ms var(--aapm-ease-out) both;
+  }
+  /* peck — chicken / hen: pecks twice */
+  svg[data-action='peck'][data-playing='true'] {
+    transform-origin: 40% 90%;
+    animation: aapm-icon-peck 640ms var(--aapm-ease-out) both;
+  }
+  /* panel — panel-left: the divider slides */
+  svg[data-action='panel'][data-playing='true'] > :last-child {
+    animation: aapm-icon-panel 480ms var(--aapm-ease-out) both;
+  }
+  /* draw — activity / monitoring: the pulse line redraws itself left → right */
+  svg[data-action='draw'][data-playing='true'] > * {
+    stroke-dasharray: 64;
+    animation: aapm-icon-draw 640ms var(--aapm-ease-out) both;
+  }
+  /* bars — charts, growth: bars grow from the baseline in turn */
+  svg[data-action='bars'][data-playing='true'] > * {
+    transform-origin: 50% 100%;
+    animation: aapm-icon-bars 520ms var(--aapm-ease-out) both;
+  }
+
+  /* shared stagger for multi-part archetypes */
+  svg:is([data-action='tiles'], [data-action='list'], [data-action='people'], [data-action='bars'])[data-playing='true']
+    > :nth-child(2) {
+    animation-delay: 50ms;
+  }
+  svg:is([data-action='tiles'], [data-action='list'], [data-action='people'], [data-action='bars'])[data-playing='true']
+    > :nth-child(3) {
+    animation-delay: 100ms;
+  }
+  svg:is([data-action='tiles'], [data-action='list'], [data-action='people'], [data-action='bars'])[data-playing='true']
+    > :nth-child(4) {
+    animation-delay: 150ms;
+  }
+  svg:is([data-action='tiles'], [data-action='list'], [data-action='people'], [data-action='bars'])[data-playing='true']
+    > :nth-child(n + 5) {
+    animation-delay: 200ms;
+  }
+}
+
+@keyframes aapm-icon-tile {
+  0% {
+    scale: 1;
+  }
+  30% {
+    scale: 0.62;
+  }
+  70% {
+    scale: 1.12;
+  }
+  100% {
+    scale: 1;
+  }
+}
+@keyframes aapm-icon-list {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  30% {
+    translate: -2.5px 0;
+    opacity: 0.25;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes aapm-icon-hop {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  35% {
+    translate: 0 -2.5px;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  70% {
+    translate: 0 0.5px;
+  }
+}
+@keyframes aapm-icon-hop-squash {
+  0% {
+    translate: 0 0;
+    scale: 1;
+  }
+  15% {
+    translate: 0 0;
+    scale: 1.06 0.9;
+  }
+  45% {
+    translate: 0 -3px;
+    scale: 0.96 1.06;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  72% {
+    translate: 0 0;
+    scale: 1.06 0.92;
+  }
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+}
+@keyframes aapm-icon-sparkle {
+  0% {
+    rotate: 0deg;
+    scale: 1;
+  }
+  35% {
+    rotate: 18deg;
+    scale: 1.16;
+  }
+  65% {
+    rotate: -8deg;
+    scale: 0.96;
+  }
+  100% {
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+@keyframes aapm-icon-shield-check {
+  from {
+    stroke-dashoffset: 14;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes aapm-icon-wiggle {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  15% {
+    rotate: -14deg;
+  }
+  35% {
+    rotate: 11deg;
+  }
+  55% {
+    rotate: -6deg;
+  }
+  75% {
+    rotate: 3deg;
+  }
+}
+@keyframes aapm-icon-bounce {
+  0% {
+    translate: 0 0;
+    scale: 1;
+  }
+  15% {
+    scale: 1.05 0.92;
+  }
+  45% {
+    translate: 0 -3px;
+    scale: 0.97 1.04;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  70% {
+    translate: 0 0;
+    scale: 1.06 0.9;
+  }
+  86% {
+    scale: 0.98 1.02;
+  }
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+}
+@keyframes aapm-icon-pin {
+  0% {
+    translate: 0 0;
+  }
+  35% {
+    translate: 0 -4px;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  60% {
+    translate: 0 0.5px;
+    scale: 1.06 0.92;
+  }
+  78% {
+    translate: 0 -1px;
+    scale: 1;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+@keyframes aapm-icon-quarter {
+  0% {
+    rotate: 0deg;
+  }
+  18% {
+    rotate: -16deg;
+  }
+  78% {
+    rotate: 368deg;
+  }
+  100% {
+    rotate: 360deg;
+  }
+}
+@keyframes aapm-icon-swap-a {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  45% {
+    translate: -3px 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+}
+@keyframes aapm-icon-swap-b {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  45% {
+    translate: 3px 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+}
+@keyframes aapm-icon-help {
+  0%,
+  100% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  30% {
+    rotate: -14deg;
+    translate: 0 -1px;
+  }
+  60% {
+    rotate: 8deg;
+  }
+  82% {
+    rotate: -3deg;
+  }
+}
+@keyframes aapm-icon-nudge {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  20% {
+    translate: -1px 1px;
+  }
+  55% {
+    translate: 2px -2px;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+}
+@keyframes aapm-icon-rock {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  20% {
+    rotate: -14deg;
+  }
+  45% {
+    rotate: 10deg;
+  }
+  68% {
+    rotate: -5deg;
+  }
+  86% {
+    rotate: 2deg;
+  }
+}
+@keyframes aapm-icon-peck {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  18% {
+    rotate: 4deg;
+  }
+  34% {
+    rotate: -16deg;
+    animation-timing-function: var(--aapm-ease-exit);
+  }
+  48% {
+    rotate: 2deg;
+  }
+  62% {
+    rotate: -12deg;
+  }
+  80% {
+    rotate: 1deg;
+  }
+}
+@keyframes aapm-icon-panel {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  40% {
+    translate: -2px 0;
+    animation-timing-function: var(--aapm-ease-overshoot);
+  }
+}
+@keyframes aapm-icon-bars {
+  0% {
+    scale: 1;
+  }
+  30% {
+    scale: 1 0.3;
+  }
+  70% {
+    scale: 1 1.1;
+  }
+  100% {
+    scale: 1;
+  }
+}
+@keyframes aapm-icon-draw {
+  from {
+    stroke-dashoffset: 64;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

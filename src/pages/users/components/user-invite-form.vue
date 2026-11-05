@@ -3,6 +3,7 @@ import { SendIcon } from '@lucide/vue'
 import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 
+import { useBlockedFeedback } from '@/components/aapm/motion/use-blocked-feedback'
 import Button from '@/components/ui/button/Button.vue'
 import { FieldError } from '@/components/ui/field'
 import { FormItem } from '@/components/ui/form'
@@ -22,6 +23,9 @@ const defaultValues: UserInviteValidator = {
   description: '',
 }
 
+const blockedRoot = useTemplateRef<HTMLElement>('blockedRoot')
+const { submitWith } = useBlockedFeedback(blockedRoot)
+
 const form = useForm({
   defaultValues,
   validators: {
@@ -38,10 +42,11 @@ const form = useForm({
     })
   },
 })
+const submit = submitWith(form)
 </script>
 
 <template>
-  <form class="space-y-8" @submit.prevent="form.handleSubmit">
+  <form ref="blockedRoot" class="space-y-8" @submit.prevent="submit">
     <form.Field name="email">
       <template #default="{ field, state }">
         <FormItem>

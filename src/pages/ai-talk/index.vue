@@ -79,7 +79,7 @@ function handleTypeChange(type: string) {
 
 <template>
   <div class="flex flex-col overflow-hidden absolute inset-0">
-    <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+    <div v-auto-animate="{ duration: 260, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }" class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
       <div
         v-for="(talk, index) in talks"
         :key="index"

@@ -2,8 +2,9 @@ import { h } from 'vue'
 
 import type { DataTableColumnDef } from '@/components/data-table'
 
+import ToneChip from '@/components/aapm/tone/tone-chip.vue'
+import { toneOf } from '@/components/aapm/tone/tones'
 import { createSelectColumn, DataTableColumnHeader } from '@/components/data-table'
-import { Badge } from '@/components/ui/badge'
 
 import type { Task } from '../data/schema'
 
@@ -27,7 +28,7 @@ export const columns: DataTableColumnDef<Task>[] = [
       const label = labels.find(label => label.value === row.original.label)
 
       return h('div', { class: 'flex space-x-2' }, [
-        label ? h(Badge, { variant: 'outline' }, () => label.label) : null,
+        label ? h(ToneChip, { tone: toneOf('label', label.value), variant: 'outline', dot: true }, () => label.label) : null,
         h('span', { class: 'max-w-[500px] truncate font-medium' }, row.getValue('title')),
       ])
     },
@@ -44,10 +45,7 @@ export const columns: DataTableColumnDef<Task>[] = [
       if (!status)
         return null
 
-      return h('div', { class: 'flex w-[100px] items-center' }, [
-        status.icon && h(status.icon, { class: 'mr-2 h-4 w-4 text-muted-foreground' }),
-        h('span', status.label),
-      ])
+      return h(ToneChip, { tone: toneOf('task', status.value), icon: status.icon }, () => status.label)
     },
     filterFn: 'arrHas',
   },
@@ -62,10 +60,7 @@ export const columns: DataTableColumnDef<Task>[] = [
       if (!priority)
         return null
 
-      return h('div', { class: 'flex items-center' }, [
-        priority.icon && h(priority.icon, { class: 'mr-2 h-4 w-4 text-muted-foreground' }),
-        h('span', {}, priority.label),
-      ])
+      return h(ToneChip, { tone: toneOf('priority', priority.value), icon: priority.icon, variant: 'outline' }, () => priority.label)
     },
     filterFn: 'arrHas',
   },

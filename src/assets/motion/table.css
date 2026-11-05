@@ -1,0 +1,46 @@
+/* Staged table rows: leaving / move / enter, and AutoHeight (Task 2).
+ * Motion rules live inside @media (prefers-reduced-motion: no-preference). */
+
+/* ── Table data change (TransitionGroup in data-table.vue / ui-kit kit-data.vue) ──────────
+ * useStagedList (composables/use-staged-list.ts) runs the change in phases:
+ * 1. rows that leave stay in place and fade + compress toward their top edge (160ms);
+ * 2. the list commits: rows that stay glide to their new slot on the compositor (FLIP, 420ms);
+ * 3. new rows fade in after the movers have started.
+ * <AutoHeight> around the table animates the container height, so content below shifts
+ * smoothly. Under reduced motion the list commits at once (no leaving phase). */
+tr[data-leaving='true'] {
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  tr[data-leaving='true'] {
+    opacity: 0;
+    scale: 1 0.6;
+    transform-origin: top;
+    /* transform stays listed: a FLIP move still running on this row keeps gliding, and Vue's
+     * move check (which clones a row) still sees a transform transition. */
+    transition:
+      opacity 160ms var(--aapm-ease-exit),
+      scale 160ms var(--aapm-ease-exit),
+      transform 420ms var(--aapm-ease-emphasis);
+  }
+  .aapm-row-move {
+    transition: transform 420ms var(--aapm-ease-emphasis);
+  }
+  .aapm-row-enter-active {
+    transition:
+      opacity 320ms var(--aapm-ease-out) 90ms,
+      transform 420ms var(--aapm-ease-emphasis);
+  }
+}
+.aapm-row-enter-from {
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+}
+/* Commit: the already faded rows drop out of the layout the moment Vue starts their leave, so
+ * the survivors FLIP from their old slots (Vue measures right after the patch) and AutoHeight
+ * sees the new height in the same frame. `transition: none` lets Vue remove them at once
+ * instead of waiting out the leaving transition. */
+[data-slot='table-body'] > tr.aapm-row-leave-active {
+  display: none;
+  transition: none;
+}

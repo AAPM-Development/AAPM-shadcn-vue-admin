@@ -1,78 +1,31 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+@import './tokens/brand.generated.css';
+@import './tokens/primitives.css';
+@import './tokens/semantic.css';
+@import './tokens/components.css';
+@import './tokens/tones.css';
+
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(1 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+/* Reka's body lock must not create a new scroll container for sticky headers (#107, #249).
+ * Lock the viewport and clip the body instead: menus opened after scrolling keep their anchor. */
+html:has(body[style*='overflow: hidden']) {
+  overflow: hidden;
 }
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+body[style*='overflow: hidden'] {
+  overflow: clip !important;
 }
 
 @theme inline {
+  /* Font system mirrors farm.aapm.co.id (aapm-tokens.css --aapm-primitive-font-ui), self-hosted */
+  --font-sans:
+    'Inter Variable', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Display face of farm.aapm.co.id (aapmDisplayFont = Outfit, verified from the served font's name table) */
+  --font-display: 'Outfit Variable', Outfit, 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -97,10 +50,62 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
+  --color-chart-target: var(--chart-target);
+  --color-seq-0: var(--seq-0);
+  --color-seq-1: var(--seq-1);
+  --color-seq-2: var(--seq-2);
+  --color-seq-3: var(--seq-3);
+  --color-seq-4: var(--seq-4);
+  --color-seq-5: var(--seq-5);
+
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent-foreground: var(--brand-accent-foreground);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-surface-tint: var(--surface-tint);
+  --color-surface-soft: var(--surface-soft);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-brand-accent-ink: var(--brand-accent-ink);
+  --color-success: var(--success);
+  --color-success-fill: var(--success-fill);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-fill: var(--warning-fill);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-fill: var(--danger-fill);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-fill: var(--info-fill);
+  --color-info-soft: var(--info-soft);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: var(--radius-card);
+  --radius-control: var(--radius-control);
+  --radius-panel: var(--radius-panel);
+  --radius-card: var(--radius-card);
+  --radius-shell: var(--radius-shell);
+
+  --shadow-card: var(--card-shadow);
+  --shadow-card-hover: var(--card-shadow-hover);
+  --shadow-pop: var(--popover-shadow);
+
+  /* farm.aapm.co.id heading tracking is -0.015em; large figures tighten slightly more */
+  --tracking-display: -0.022em;
+  --tracking-title: -0.015em;
+  --tracking-overline: 0.14em;
+
+  --ease-aapm: var(--aapm-ease-out);
+  --ease-emphasis: var(--aapm-ease-emphasis);
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -110,8 +115,9 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-accordion-down: accordion-down 0.22s var(--aapm-ease-out);
+  --animate-accordion-up: accordion-up 0.18s var(--aapm-ease-out);
+  --animate-rise: aapm-rise 0.56s var(--aapm-ease-out) both;
 
   @keyframes accordion-down {
     from {
@@ -130,14 +136,77 @@
       height: 0;
     }
   }
+
+  @keyframes aapm-rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 8px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  /* Variable text never widens its container (layout standards #41): breaks only when nothing else fits */
+  :where(h1, h2, h3, h4, p, li, dt, dd, label, td, th, button, a, [data-slot='badge']) {
+    overflow-wrap: anywhere;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--highlight) 40%, transparent);
+    color: var(--foreground);
+  }
+  /* Lucide stays inside components/ui primitives (chevrons, checks) — lighten its stroke. */
+  .lucide {
+    stroke-width: 1.75;
+  }
+}
+
+/* Uppercase micro label above titles and metrics. (Not `overline`: that is Tailwind's text-decoration utility.) */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+}
+
+/* Tabular figures for columns, axes and aligned metrics. */
+@utility numeric {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Stagger helper: set --rise-index on children of an element using animate-rise. */
+@utility rise-stagger {
+  animation-delay: calc(var(--rise-index, 0) * 70ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -237,4 +306,46 @@
     background-image: none;
     -webkit-text-fill-color: currentColor;
   }
+}
+
+/*
+ * Current-page indication (UX-03). Unlayered so it wins over the sidebar primitive's
+ * utilities without editing components/ui. The tint itself is drawn by the sliding pill
+ * in components/app-sidebar/menu-button.vue; sub-items get the tint directly.
+ */
+[data-sidebar='menu-button'][data-active='true'] {
+  background: transparent;
+  color: var(--nav-active-foreground);
+  font-weight: 600;
+}
+[data-sidebar='menu-button'][data-active='true'] > svg {
+  color: var(--nav-active-icon);
+}
+[data-sidebar='menu-sub-button'][data-active='true'] {
+  background: var(--nav-active);
+  color: var(--nav-active-foreground);
+  font-weight: 600;
+}
+
+/*
+ * Surface separation (user: "semua layar putih, garis numpuk"). Cards float on the neutral canvas
+ * with a hairline ring + diffused shadow (--card-shadow) instead of a hard 1px border, so a card's
+ * edge never stacks with the lines inside it. Unlayered: wins over the stock `border` utility.
+ */
+[data-slot='card'] {
+  border-color: transparent;
+  box-shadow: var(--card-shadow);
+}
+@media (forced-colors: active) {
+  [data-slot='card'] {
+    border-color: CanvasText;
+  }
+}
+
+/* Font system (farm.aapm.co.id): Outfit for page-level display type, Inter for everything else */
+h1,
+[data-display] {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+  font-weight: 600;
 }

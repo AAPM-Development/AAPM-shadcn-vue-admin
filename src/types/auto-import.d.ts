@@ -12,6 +12,7 @@ declare global {
   const API_TIMEOUT: typeof import('../constants/app-config').API_TIMEOUT
   const CONTENT_LAYOUTS: typeof import('../constants/themes').CONTENT_LAYOUTS
   const DEFAULT_PAGE_SIZE: typeof import('../constants/app').DEFAULT_PAGE_SIZE
+  const DEFAULT_THEME: typeof import('../constants/themes').DEFAULT_THEME
   const EffectScope: typeof import('vue').EffectScope
   const HOME_PATH: typeof import('../constants/app').HOME_PATH
   const LOGIN_PATH: typeof import('../constants/app').LOGIN_PATH
@@ -19,6 +20,7 @@ declare global {
   const RADIUS: typeof import('../constants/themes').RADIUS
   const THEMES: typeof import('../constants/themes').THEMES
   const THEME_PRIMARY_COLORS: typeof import('../constants/themes').THEME_PRIMARY_COLORS
+  const attachSmoothCaret: typeof import('../composables/use-smooth-caret').attachSmoothCaret
   const computed: typeof import('vue').computed
   const createApp: typeof import('vue').createApp
   const customRef: typeof import('vue').customRef
@@ -38,6 +40,7 @@ declare global {
   const isShallow: typeof import('vue').isShallow
   const logout: typeof import('../composables/use-auth')['logout']
   const markRaw: typeof import('vue').markRaw
+  const measureCaret: typeof import('../composables/use-smooth-caret').measureCaret
   const navData: typeof import('../constants/sidebar-data').navData
   const nextTick: typeof import('vue').nextTick
   const onActivated: typeof import('vue').onActivated
@@ -63,6 +66,7 @@ declare global {
   const ref: typeof import('vue').ref
   const resolveComponent: typeof import('vue').resolveComponent
   const resolveSystemConfigValue: typeof import('../composables/use-system-config-query').resolveSystemConfigValue
+  const scrollToAnchorWhenStable: typeof import('../composables/use-anchor-scroll').scrollToAnchorWhenStable
   const settingsNavItems: typeof import('../constants/sidebar-data').settingsNavItems
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
@@ -87,6 +91,7 @@ declare global {
   const useSidebarConfigStore: typeof import('../stores/sidebar-config').useSidebarConfigStore
   const useSidebarNavigation: typeof import('../composables/use-sidebar-navigation').useSidebarNavigation
   const useSlots: typeof import('vue').useSlots
+  const useStagedList: typeof import('../composables/use-staged-list').useStagedList
   const useSystemConfig: typeof import('../composables/use-system-config').useSystemConfig
   const useSystemConfigQuery: typeof import('../composables/use-system-config-query').useSystemConfigQuery
   const useSystemTheme: typeof import('../composables/use-system-theme').useSystemTheme
@@ -103,6 +108,12 @@ declare global {
   // @ts-ignore
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { AnchorScroller, AnchorScrollOptions } from '../composables/use-anchor-scroll'
+  import('../composables/use-anchor-scroll')
+  // @ts-ignore
+  export type { StagedListOptions, StagedList } from '../composables/use-staged-list'
+  import('../composables/use-staged-list')
   // @ts-ignore
   export type { Theme, Radius, ContentLayout } from '../constants/themes'
   import('../constants/themes')

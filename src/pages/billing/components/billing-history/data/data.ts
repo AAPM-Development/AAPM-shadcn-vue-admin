@@ -7,10 +7,10 @@ export const plans = [
 ]
 
 export const statuses = [
-  { value: 'paid', label: 'Paid', icon: HandCoinsIcon, color: 'green' },
-  { value: 'unpaid', label: 'Unpaid', icon: CircleDashedIcon, color: 'orange' },
-  { value: 'overdue', label: 'Overdue', icon: ClockAlertIcon, color: 'red' },
-  { value: 'cancelled', label: 'Cancelled', icon: CircleSlashIcon, color: 'gray' },
+  { value: 'paid', label: 'Paid', icon: HandCoinsIcon },
+  { value: 'unpaid', label: 'Unpaid', icon: CircleDashedIcon },
+  { value: 'overdue', label: 'Overdue', icon: ClockAlertIcon },
+  { value: 'cancelled', label: 'Cancelled', icon: CircleSlashIcon },
 ]
 
 export type PayState = 'paid' | 'unpaid' | 'overdue' | 'cancelled'

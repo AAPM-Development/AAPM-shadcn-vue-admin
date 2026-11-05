@@ -34,11 +34,11 @@ function handleLocaleChange(val: AcceptableValue) {
       <Button
         variant="outline"
         size="icon-sm"
-        aria-label="Change language"
-        title="Change language"
+        aria-label="Ganti bahasa / Change language"
+        title="Ganti bahasa / Change language"
       >
         <Icon icon="mdi:translate" />
-        <span class="sr-only">Change language</span>
+        <span class="sr-only">Ganti bahasa / Change language</span>
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
@@ -46,13 +46,13 @@ function handleLocaleChange(val: AcceptableValue) {
         v-model="locale"
         @update:model-value="handleLocaleChange"
       >
+        <DropdownMenuRadioItem value="id">
+          <Icon icon="flag:id-4x3" />
+          <span>Bahasa Indonesia</span>
+        </DropdownMenuRadioItem>
         <DropdownMenuRadioItem value="en">
           <Icon icon="flag:us-4x3" />
           <span>English</span>
-        </DropdownMenuRadioItem>
-        <DropdownMenuRadioItem value="zh">
-          <Icon icon="flag:cn-4x3" />
-          <span>中文</span>
         </DropdownMenuRadioItem>
       </DropdownMenuRadioGroup>
     </DropdownMenuContent>

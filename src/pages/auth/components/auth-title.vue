@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { useColorMode } from '@vueuse/core'
-
+import AnimatedBrandMark from '@/components/aapm/animated-brand-mark.vue'
 import { AUTH_CONFIG } from '@/config/auth.ts'
-import { SITE_CONFIG } from '@/config/site'
 
-const mode = useColorMode()
-const logo = computed(() => mode.value === 'dark' ? SITE_CONFIG.logo.dark : SITE_CONFIG.logo.light)
+withDefaults(defineProps<{ onDark?: boolean, paused?: boolean }>(), { onDark: false })
 </script>
 
 <template>
-  <h1 class="flex items-center gap-2 text-xl font-bold">
-    <img :src="logo">
-
-    <span>{{ AUTH_CONFIG.title }}</span>
+  <!-- The "AAPM Cloud ERP" lockup is the title; the text stays for assistive tech -->
+  <h1 class="flex items-center justify-center">
+    <AnimatedBrandMark variant="erp" :on-dark="onDark" :paused="paused" class="w-[min(72vw,18rem)]" :label="AUTH_CONFIG.title" />
   </h1>
 </template>

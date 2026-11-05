@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ChevronsUpDownIcon, PlusIcon } from '@lucide/vue'
 
+import BrandMark from '@/components/aapm/brand-mark.vue'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
@@ -42,14 +43,11 @@ function handleSelect(command: TComponent) {
               size="lg"
               class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div
-                class="flex items-center justify-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground"
-              >
-                <component :is="activeTeam.logo" class="size-4" />
-              </div>
-              <div class="grid flex-1 text-sm leading-tight text-left">
-                <span class="font-semibold truncate">{{ activeTeam.name }}</span>
-                <span class="text-xs truncate">{{ activeTeam.plan }}</span>
+              <component :is="activeTeam.logo" v-if="activeTeam.logo" class="size-6 shrink-0" />
+              <BrandMark v-else class="h-7 shrink-0" />
+              <div class="grid min-w-0 flex-1 grid-cols-1 text-left text-sm leading-tight">
+                <span class="font-semibold tracking-title truncate" :title="activeTeam.name">{{ activeTeam.name }}</span>
+                <span class="eyebrow truncate text-[10px] text-muted-foreground" :title="activeTeam.plan">{{ activeTeam.plan }}</span>
               </div>
               <ChevronsUpDownIcon class="ml-auto" />
             </SidebarMenuButton>
@@ -61,7 +59,7 @@ function handleSelect(command: TComponent) {
             :side-offset="4"
           >
             <DropdownMenuLabel class="text-xs text-muted-foreground">
-              Teams
+              Perusahaan & lokasi
             </DropdownMenuLabel>
             <DropdownMenuItem
               v-for="(team, index) in teams"
@@ -69,9 +67,8 @@ function handleSelect(command: TComponent) {
               class="gap-2 p-2"
               @click="setActiveTeam(team)"
             >
-              <div class="flex items-center justify-center border rounded-sm size-6">
-                <component :is="team.logo" class="size-4 shrink-0" />
-              </div>
+              <component :is="team.logo" v-if="team.logo" class="size-5 shrink-0" />
+              <BrandMark v-else class="h-5 shrink-0" />
               {{ team.name }}
               <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
             </DropdownMenuItem>
@@ -83,7 +80,7 @@ function handleSelect(command: TComponent) {
                   <PlusIcon class="size-4" />
                 </div>
                 <div class="font-medium text-muted-foreground">
-                  Add team
+                  Tambah perusahaan
                 </div>
               </DropdownMenuItem>
             </DialogTrigger>

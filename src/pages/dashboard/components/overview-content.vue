@@ -1,137 +1,95 @@
 <script setup lang="ts">
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import BrandBumper from '@/components/aapm/brand-bumper.vue'
+import Reveal from '@/components/aapm/motion/reveal.vue'
+import { formatNumber } from '@/lib/format-id'
 
-import OverviewChart from './overview-chart.vue'
-import RecentSales from './recent-sales.vue'
+import { exceptions, heroKpi, kpis, productionSeries } from '../data/farm-overview'
+import EggGradeCard from './egg-grade-card.vue'
+import ExceptionsCard from './exceptions-card.vue'
+import FeedStockCard from './feed-stock-card.vue'
+import HouseRanking from './house-ranking.vue'
+import KpiCard from './kpi-card.vue'
+import MortalityHeatmap from './mortality-heatmap.vue'
+import ProductionTrend from './production-trend.vue'
+import RecentOrders from './recent-orders.vue'
+
+/** Morning brief (brand bumper): today in one sentence, then three facts that matter. */
+const today = productionSeries.at(-1)!
+const critical = exceptions.filter(e => e.tone === 'danger').length
+const greeting = (() => {
+  const h = new Date().getHours()
+  return h < 11 ? 'Selamat pagi.' : h < 15 ? 'Selamat siang.' : h < 18 ? 'Selamat sore.' : 'Selamat malam.'
+})()
+const facts = [
+  { label: 'HD hari ini', value: `${formatNumber(today.hdp, 1)}%` },
+  { label: 'Produksi', value: `${formatNumber(today.eggsKg)} kg` },
+  { label: 'Perlu tindakan', value: `${exceptions.length} · ${critical} kritis` },
+]
 </script>
 
 <template>
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-    <Card>
-      <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">
-          Total Revenue
-        </CardTitle>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          class="size-4 text-muted-foreground"
-        >
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-      </CardHeader>
-      <CardContent>
-        <div class="text-2xl font-bold">
-          $45,231.89
-        </div>
-        <p class="text-xs text-muted-foreground">
-          +20.1% from last month
-        </p>
-      </CardContent>
-    </Card>
-    <Card>
-      <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">
-          Subscriptions
-        </CardTitle>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          class="size-4 text-muted-foreground"
-        >
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      </CardHeader>
-      <CardContent>
-        <div class="text-2xl font-bold">
-          +2350
-        </div>
-        <p class="text-xs text-muted-foreground">
-          +180.1% from last month
-        </p>
-      </CardContent>
-    </Card>
-    <Card>
-      <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">
-          Sales
-        </CardTitle>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          class="size-4 text-muted-foreground"
-        >
-          <rect width="20" height="14" x="2" y="5" rx="2" />
-          <path d="M2 10h20" />
-        </svg>
-      </CardHeader>
-      <CardContent>
-        <div class="text-2xl font-bold">
-          +12,234
-        </div>
-        <p class="text-xs text-muted-foreground">
-          +19% from last month
-        </p>
-      </CardContent>
-    </Card>
-    <Card>
-      <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">
-          Active Now
-        </CardTitle>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          class="size-4 text-muted-foreground"
-        >
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-        </svg>
-      </CardHeader>
-      <CardContent>
-        <div class="text-2xl font-bold">
-          +573
-        </div>
-        <p class="text-xs text-muted-foreground">
-          +201 since last hour
-        </p>
-      </CardContent>
-    </Card>
-  </div>
+  <div class="grid grid-cols-1 gap-4 lg:gap-5">
+    <!-- 0 · Morning brief — the farm.aapm.co.id green bumper as the dashboard's signature moment -->
+    <Reveal :index="0">
+      <BrandBumper :words="`${greeting} Farm berjalan, ${critical} hal kritis menunggu.`" eyebrow="Ringkasan hari ini · Farm Payakumbuh">
+        <dl class="mt-2 flex flex-wrap gap-x-8 gap-y-3">
+          <div v-for="fact in facts" :key="fact.label" class="grid gap-0.5">
+            <dt class="text-xs text-white/65">
+              {{ fact.label }}
+            </dt>
+            <dd class="text-lg font-semibold numeric">
+              {{ fact.value }}
+            </dd>
+          </div>
+        </dl>
+      </BrandBumper>
+    </Reveal>
 
-  <div class="grid grid-cols-1 gap-4 lg:grid-cols-7">
-    <OverviewChart class="col-span-1 lg:col-span-4" />
-    <Card class="col-span-1 lg:col-span-3">
-      <CardHeader>
-        <CardTitle>Recent Sales</CardTitle>
-        <CardDescription>
-          You made 265 sales this month.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <RecentSales />
-      </CardContent>
-    </Card>
+    <!-- 1 · Hero + 2×2 KPI bento -->
+    <section aria-label="Indikator utama" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+      <Reveal :index="0" class="lg:col-span-5">
+        <KpiCard :kpi="heroKpi" hero />
+      </Reveal>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-7 lg:gap-5">
+        <Reveal v-for="(kpi, i) in kpis" :key="kpi.key" :index="i + 1">
+          <KpiCard :kpi="kpi" />
+        </Reveal>
+      </div>
+    </section>
+
+    <!-- 2 · Actionable queue first (UX-09), then the production trend -->
+    <section aria-label="Produksi dan tindakan" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+      <Reveal :index="3" class="lg:col-span-8">
+        <ProductionTrend />
+      </Reveal>
+      <Reveal :index="4" class="lg:col-span-4">
+        <ExceptionsCard />
+      </Reveal>
+    </section>
+
+    <!-- 3 · Health and grading -->
+    <section aria-label="Kesehatan flock dan grading" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+      <Reveal :index="5" class="lg:col-span-7">
+        <MortalityHeatmap />
+      </Reveal>
+      <Reveal :index="6" class="lg:col-span-5">
+        <EggGradeCard />
+      </Reveal>
+    </section>
+
+    <!-- 4 · Inputs and output -->
+    <section aria-label="Pakan dan output kandang" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+      <Reveal :index="7" class="lg:col-span-5">
+        <FeedStockCard />
+      </Reveal>
+      <Reveal :index="8" class="lg:col-span-7">
+        <HouseRanking />
+      </Reveal>
+    </section>
+
+    <!-- 5 · Sales -->
+    <Reveal as="section" aria-label="Penjualan" :index="9">
+      <RecentOrders />
+    </Reveal>
   </div>
 </template>

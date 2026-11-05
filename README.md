@@ -171,7 +171,7 @@ When connecting a backend, use `.env.example` as a reference for your local envi
 - `VITE_SERVER_API_PREFIX`: API path prefix (defaults to `/api`).
 - `VITE_SERVER_API_TIMEOUT`: request timeout in milliseconds (defaults to `5000`).
 
-`src/lib/api-client.ts` provides the shared ofetch client, and `src/services/api/` contains API examples. The Tasks page currently uses `src/pages/tasks/data/tasks.json`; the task API examples are not wired into that page.
+`src/services/api-client.ts` provides the shared ofetch client, and `src/services/api/` contains API examples. The Tasks page currently uses `src/pages/tasks/data/tasks.json`; the task API examples are not wired into that page.
 
 ## 📄 License
 

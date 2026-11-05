@@ -1,0 +1,236 @@
+/* Data-viz motion (Task 11): in-view entrance, tweened updates, hover dimming, legend fade.
+ * Motion rules live inside @media (prefers-reduced-motion: no-preference).
+ *
+ * components/aapm/charts/use-chart-inview.ts marks each chart root `data-aapm-chart` and, once
+ * it is on screen, `data-aapm-inview`. Entrances run once (≤ 900ms, the spec's chart exception);
+ * data changes tween from the old value instead of redrawing. Under reduced motion `inview` is set
+ * at mount and nothing here animates, so data is readable immediately.
+ *
+ * Hooks used by the chart components:
+ *   [data-aapm-bar]       bar / bullet fill wrapper — width tweens on data change, dims on hover
+ *   [data-aapm-marker]    bullet target marker — slides when the target moves
+ *   [data-aapm-tween]     svg path whose `d` tweens on data change (same command structure)
+ *   [data-aapm-area]      sparkline area — rises after the line starts drawing
+ *   [data-aapm-crosshair], [data-aapm-dot]  hover readout — glides by transform
+ *   [data-aapm-arc]       donut arc — hover lift; [data-aapm-sweep-ring] masks the entrance sweep
+ *   [data-aapm-cell]      heatmap cell — diagonal cascade via --aapm-d, colour tweens
+ */
+
+[data-aapm-arc] {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+/* Hover / focus emphasis (user: "highlight hover masih kurang jelas") — state, not motion */
+[data-aapm-bar-row][data-active] {
+  background: var(--muted);
+}
+[data-aapm-cell]:is(:hover, :focus-visible) {
+  z-index: 1;
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 4px var(--foreground);
+}
+/* Heatmap crosshair: the hovered cell's row and column read as a band (state, not motion) */
+[data-aapm-cell][data-cross] {
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--foreground) 16%, transparent);
+}
+[data-aapm-axis-label][data-active] {
+  color: var(--foreground);
+  font-weight: 600;
+}
+/* KPI tiles: the metric's hue tints the icon chip; hover/focus lifts the card and rings it in that hue */
+[data-aapm-kpi-icon] {
+  background: color-mix(in oklab, var(--kpi-hue) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--kpi-hue) 22%, transparent);
+}
+[data-aapm-kpi]:is(:hover, :focus-within) {
+  box-shadow:
+    var(--card-shadow-hover),
+    0 0 0 1px color-mix(in oklab, var(--kpi-hue) 45%, transparent);
+}
+/* Explicit comparison periods keep the same stroke weight and have no glow. */
+[data-aapm-current] {
+  filter: none;
+}
+@media (forced-colors: active) {
+  [data-aapm-current] {
+    filter: none;
+  }
+}
+/* "Today" pulse ring: invisible at rest; it only exists as motion */
+[data-aapm-live] {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ── Tweened updates ─────────────────────────────────────────────────── */
+  [data-aapm-bar] {
+    transition:
+      width 520ms var(--aapm-ease-emphasis),
+      opacity 200ms var(--aapm-ease-out);
+  }
+  [data-aapm-marker] {
+    transition: left 520ms var(--aapm-ease-emphasis);
+  }
+  [data-aapm-tween] {
+    transition:
+      d 480ms var(--aapm-ease-emphasis),
+      opacity 200ms var(--aapm-ease-out),
+      scale 200ms var(--aapm-ease-emphasis);
+  }
+  [data-aapm-crosshair],
+  [data-aapm-dot] {
+    transition: transform 120ms var(--aapm-ease-out);
+  }
+  [data-aapm-cell]:is(:hover, :focus-visible) {
+    scale: 1.12;
+  }
+  [data-aapm-bar-row] {
+    transition: background-color 150ms var(--aapm-ease-out);
+  }
+  /* Diverging bars grow out of the midline; value changes re-size by width */
+  [data-aapm-diverge] {
+    transition:
+      scale 600ms var(--aapm-ease-emphasis) var(--aapm-delay, 0s),
+      width var(--chart-tween) var(--aapm-ease-emphasis);
+  }
+  /* Segmented bar: parts sweep in left → right once in view; data changes re-share by flex-grow */
+  [data-aapm-segment] {
+    transition:
+      scale 600ms var(--aapm-ease-emphasis) var(--aapm-delay, 0s),
+      flex-grow var(--chart-tween) var(--aapm-ease-emphasis),
+      opacity 200ms var(--aapm-ease-out);
+  }
+  [data-aapm-cell] {
+    transition:
+      background-color 320ms var(--aapm-ease-out),
+      scale 150ms var(--aapm-ease-out),
+      box-shadow 150ms var(--aapm-ease-out);
+  }
+
+  /* ── Entrance: hidden only while a chart waits to be scrolled into view ───── */
+  [data-aapm-chart]:not([data-aapm-inview]) [data-aapm-cell] {
+    opacity: 0;
+  }
+  /* Sparkline entrance: the whole plot wipes in left → right; the end dot lands as the wipe arrives */
+  [data-aapm-chart]:not([data-aapm-inview]) [data-aapm-spark-plot] {
+    clip-path: inset(0 100% 0 0);
+  }
+  [data-aapm-chart]:not([data-aapm-inview]) [data-aapm-dot] {
+    opacity: 0;
+  }
+  [data-aapm-inview] [data-aapm-spark-plot] {
+    animation: aapm-series-wipe 800ms var(--aapm-ease-emphasis) backwards;
+  }
+  [data-aapm-inview] [data-aapm-dot] {
+    animation: aapm-dot-arrive 260ms var(--aapm-ease-overshoot) 700ms backwards;
+  }
+  [data-aapm-chart]:not([data-aapm-inview]) [data-aapm-sweep-ring] {
+    stroke-dashoffset: var(--aapm-ring);
+  }
+
+  /* Donut: one stroke around the ring uncovers the arcs clockwise from 12 o'clock */
+  [data-aapm-inview] [data-aapm-sweep-ring] {
+    animation: aapm-donut-sweep 800ms var(--aapm-ease-emphasis) backwards;
+  }
+  /* Heatmap: cells cascade along the diagonal (row + column), ≤ 480ms of stagger */
+  [data-aapm-inview] [data-aapm-cell] {
+    animation: aapm-cell-in 320ms var(--aapm-ease-out) backwards;
+    animation-delay: calc(min(var(--aapm-d, 0) * 12ms, 480ms));
+  }
+  /* Unovis (production trend): series wipe in left → right, axes fade */
+  [data-aapm-inview] :is([class$='-line-component'], [class$='-area-component']) {
+    animation: aapm-series-wipe 900ms var(--aapm-ease-emphasis) backwards;
+  }
+  [data-aapm-inview] [class$='-axis-component'] {
+    animation: aapm-axis-fade 500ms var(--aapm-ease-out) backwards;
+  }
+  [data-aapm-chart]:not([data-aapm-inview]) :is([class$='-line-component'], [class$='-area-component']) {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  [data-aapm-kpi] {
+    transition:
+      box-shadow 220ms var(--aapm-ease-out),
+      translate 260ms var(--aapm-ease-emphasis);
+  }
+  [data-aapm-kpi]:hover {
+    translate: 0 -2px;
+  }
+  [data-aapm-kpi-icon] {
+    transition: scale 260ms var(--aapm-ease-overshoot);
+  }
+  [data-aapm-kpi]:hover [data-aapm-kpi-icon] {
+    scale: 1.06;
+  }
+  /* Sparkline "today" pulse: a slow breath out of the last point — the data is live */
+  [data-aapm-inview] [data-aapm-live] {
+    animation: aapm-live-pulse 2400ms var(--aapm-ease-out) 1200ms infinite;
+  }
+  [data-aapm-axis-label] {
+    transition:
+      color 150ms var(--aapm-ease-out),
+      font-weight 150ms var(--aapm-ease-out);
+  }
+
+  /* Legend toggles fade (the legend button itself; series fade via Unovis duration) */
+  [aria-pressed] > svg line,
+  [aria-pressed] > span {
+    transition:
+      opacity 200ms var(--aapm-ease-out),
+      text-decoration-color 200ms var(--aapm-ease-out);
+  }
+}
+
+@keyframes aapm-area-rise {
+  from {
+    opacity: 0;
+    scale: 1 0.4;
+  }
+}
+@keyframes aapm-donut-sweep {
+  from {
+    stroke-dashoffset: var(--aapm-ring);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes aapm-cell-in {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+@keyframes aapm-series-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes aapm-axis-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes aapm-live-pulse {
+  0% {
+    opacity: 0.5;
+    scale: 1;
+  }
+  70%,
+  100% {
+    opacity: 0;
+    scale: 2.6;
+  }
+}
+@keyframes aapm-dot-arrive {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}

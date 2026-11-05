@@ -70,6 +70,7 @@ function handleSelect(option: FacetedFilterOption) {
                 variant="secondary"
                 class="px-1 font-normal rounded-sm"
               >
+                <span v-if="option.tone" class="aapm-tone-dot mr-1" :data-tone="option.tone" aria-hidden="true" />
                 {{ option.label }}
               </Badge>
             </template>
@@ -102,6 +103,7 @@ function handleSelect(option: FacetedFilterOption) {
                 <CheckIcon :class="cn('h-4 w-4', selectedValues.has(option.value) ? 'text-primary-foreground' : '')" />
               </div>
               <component :is="option.icon" v-if="option.icon" class="size-4 mr-2 text-muted-foreground" />
+              <span v-if="option.tone" class="aapm-tone-dot mr-2" :data-tone="option.tone" aria-hidden="true" />
               <span>{{ option.label }}</span>
               <span v-if="facets?.get(option.value)" class="flex items-center justify-center size-4 ml-auto font-mono text-xs">
                 {{ facets.get(option.value) }}

@@ -120,6 +120,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/brand/': RouteRecordInfo<
+      '/brand/',
+      '/brand',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/dashboard/': RouteRecordInfo<
       '/dashboard/',
       '/dashboard',
@@ -215,6 +222,13 @@ declare module 'vue-router/auto-routes' {
     '/tasks/': RouteRecordInfo<
       '/tasks/',
       '/tasks',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/ui-kit/': RouteRecordInfo<
+      '/ui-kit/',
+      '/ui-kit',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -341,6 +355,14 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    'src/pages/brand/index.vue': {
+      routes:
+        | '/brand/'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     'src/pages/dashboard/index.vue': {
       routes:
         | '/dashboard/'
@@ -450,6 +472,14 @@ declare module 'vue-router/auto-routes' {
     'src/pages/tasks/index.vue': {
       routes:
         | '/tasks/'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/ui-kit/index.vue': {
+      routes:
+        | '/ui-kit/'
       views:
         | never
       pathParamNames:

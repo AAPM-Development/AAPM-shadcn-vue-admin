@@ -2,6 +2,7 @@
 import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 
+import { useBlockedFeedback } from '@/components/aapm/motion/use-blocked-feedback'
 import { Button } from '@/components/ui/button'
 import { FieldError } from '@/components/ui/field'
 import { FormItem } from '@/components/ui/form'
@@ -32,6 +33,9 @@ function getInitialValues(task: Task | null): TaskValidator {
   }
 }
 
+const blockedRoot = useTemplateRef<HTMLElement>('blockedRoot')
+const { submitWith } = useBlockedFeedback(blockedRoot)
+
 const form = useForm({
   defaultValues: getInitialValues(props.task),
   validators: {
@@ -45,6 +49,7 @@ const form = useForm({
     emits('close')
   },
 })
+const submit = submitWith(form)
 
 watch(() => props.task, (task) => {
   form.reset(getInitialValues(task), { keepDefaultValues: true })
@@ -53,7 +58,7 @@ watch(() => props.task, (task) => {
 
 <template>
   <div>
-    <form class="w-2/3 space-y-6" @submit.prevent="form.handleSubmit">
+    <form ref="blockedRoot" class="w-2/3 space-y-6" @submit.prevent="submit">
       <form.Field name="title">
         <template #default="{ field, state }">
           <FormItem>
