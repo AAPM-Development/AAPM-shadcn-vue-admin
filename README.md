@@ -1,3 +1,28 @@
+<div align="center">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme-assets/aapm-dark.svg"/><img src="docs/readme-assets/aapm-light.svg" width="260" alt="AAPM"/></picture>
+  <h1>AAPM UI Kit · Shadcn Vue Admin</h1>
+  <p><strong>Vue dashboard starter · UI reference and reusable components</strong></p>
+  <p><img src="docs/readme-assets/vue.svg" width="28" height="28" alt="vue"/> <img src="docs/readme-assets/vite.svg" width="28" height="28" alt="vite"/> <img src="docs/readme-assets/typescript.svg" width="28" height="28" alt="typescript"/> <img src="docs/readme-assets/tailwind.svg" width="28" height="28" alt="tailwind"/> <img src="docs/readme-assets/shadcn.svg" width="28" height="28" alt="shadcn"/> <img src="docs/readme-assets/tanstack.svg" width="28" height="28" alt="tanstack"/> <img src="docs/readme-assets/pnpm.svg" width="28" height="28" alt="pnpm"/> <img src="docs/readme-assets/nodejs.svg" width="28" height="28" alt="nodejs"/></p>
+  <p><a href="https://shadcn-vue-admin.netlify.app/">Live demo</a> · <a href="https://github.com/Whbbit1999/shadcn-vue-admin">Upstream source</a> · <a href="#full-upstream-guide">Complete guide</a></p>
+</div>
+
+| Layer | Current declared version |
+|---|---|
+| Frontend | **Vue ^3.5.44** · Vue Router **^5.4.0** · TypeScript **~6.0.3** |
+| Toolchain | **Vite ^8.3.5** · **pnpm 11.28.8** · Node.js **>=22.15** |
+| UI styling | **Tailwind CSS ^4.3.3** · shadcn-vue / Reka UI **^2.11.0** |
+| Tables and forms | TanStack Vue Table **^9.3.1**, Vue Form **^1.33.5**, Zod **^4.6.7** |
+| State and data | Pinia **^4.1.0** · TanStack Vue Query **^5.105.0** |
+| Quality | Vitest, ESLint, vue-tsc · commands: `pnpm dev`, `pnpm build`, `pnpm test:run` |
+| Scope | UI starter / demo screens; authentication and sample data are illustrative |
+
+<p align="center"><img src=".github/assets/shadcn-vue-admin.png" width="820" alt="Shadcn Vue Admin UI preview"/></p>
+
+<details>
+<summary><strong>Full upstream guide — components, setup, features, and licenses</strong></summary>
+
+<a id="full-upstream-guide"></a>
+
 # Shadcn Vue Admin
 
 [![code style](https://antfu.me/badge-code-style.svg)](https://github.com/antfu/eslint-config)
@@ -156,3 +181,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](https://g
 
 - **Developer**: [Whbbit1999](https://github.com/Whbbit1999)
 - **Original Design**: [shadcn-admin](https://github.com/satnaing/shadcn-admin)
+
+
+</details>
