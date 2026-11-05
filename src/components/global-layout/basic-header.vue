@@ -13,11 +13,11 @@ defineProps<LayoutHeaderProps>()
       sticky ? 'sticky top-14 z-30 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70' : '',
     )"
   >
-    <div class="min-w-0 space-y-1.5">
+    <div class="min-w-0 space-y-1.5 wrap-anywhere">
       <p v-if="overline" class="eyebrow text-muted-foreground">
         {{ overline }}
       </p>
-      <h1 class="text-2xl font-semibold tracking-display text-foreground sm:text-[1.875rem] sm:leading-9">
+      <h1 class="text-2xl font-semibold tracking-title text-foreground sm:text-[1.75rem] sm:leading-[2.1875rem]">
         {{ title }}
       </h1>
       <p v-if="description" class="max-w-[65ch] text-sm text-muted-foreground text-pretty">
@@ -25,7 +25,7 @@ defineProps<LayoutHeaderProps>()
       </p>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2">
+    <div class="flex min-w-0 flex-wrap items-center gap-2 [&_button]:h-auto [&_button]:min-h-9 [&_button]:max-w-full [&_button]:whitespace-normal [&_button]:wrap-anywhere">
       <slot name="actions" />
     </div>
   </header>

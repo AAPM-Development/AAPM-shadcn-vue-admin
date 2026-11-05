@@ -14,12 +14,13 @@ import CustomRadius from './custom-radius.vue'
 import CustomThemeTitle from './custom-theme-title.vue'
 import MenuStyle from './menu-style.vue'
 import ToggleColorMode from './toggle-color-mode.vue'
+import UiSound from './ui-sound.vue'
 </script>
 
 <template>
   <Popover>
-    <PopoverTrigger>
-      <Button variant="outline" size="icon-sm">
+    <PopoverTrigger as-child>
+      <Button variant="outline" size="icon-sm" aria-label="Pengaturan tema" title="Pengaturan tema">
         <PaintbrushIcon />
       </Button>
     </PopoverTrigger>
@@ -28,6 +29,7 @@ import ToggleColorMode from './toggle-color-mode.vue'
       <CustomColor />
       <CustomRadius />
       <ToggleColorMode />
+      <UiSound />
       <ContentLayout />
       <MenuStyle />
     </PopoverContent>

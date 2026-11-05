@@ -226,6 +226,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/ui-kit/': RouteRecordInfo<
+      '/ui-kit/',
+      '/ui-kit',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/users/': RouteRecordInfo<
       '/users/',
       '/users',
@@ -465,6 +472,14 @@ declare module 'vue-router/auto-routes' {
     'src/pages/tasks/index.vue': {
       routes:
         | '/tasks/'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/ui-kit/index.vue': {
+      routes:
+        | '/ui-kit/'
       views:
         | never
       pathParamNames:

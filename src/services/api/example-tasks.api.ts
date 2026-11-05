@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
-import { apiFetch } from '@/lib/api-client'
+import { apiFetch } from '@/services/api-client'
 
 import type { IResponse } from '../types/response.type'
 

@@ -6,7 +6,7 @@ import { createTask, deleteTask, fetchTaskById, fetchTasks, updateTask } from '.
 
 const apiFetch = vi.hoisted(() => vi.fn())
 
-vi.mock('@/lib/api-client', () => ({ apiFetch }))
+vi.mock('@/services/api-client', () => ({ apiFetch }))
 
 const task: ITask = {
   title: 'Write tests',

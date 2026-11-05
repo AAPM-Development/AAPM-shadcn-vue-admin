@@ -45,9 +45,9 @@ function handleSelect(command: TComponent) {
             >
               <component :is="activeTeam.logo" v-if="activeTeam.logo" class="size-6 shrink-0" />
               <BrandMark v-else class="h-7 shrink-0" />
-              <div class="grid flex-1 text-sm leading-tight text-left">
-                <span class="font-semibold tracking-title truncate">{{ activeTeam.name }}</span>
-                <span class="eyebrow truncate text-[10px] text-muted-foreground">{{ activeTeam.plan }}</span>
+              <div class="grid min-w-0 flex-1 grid-cols-1 text-left text-sm leading-tight">
+                <span class="font-semibold tracking-title truncate" :title="activeTeam.name">{{ activeTeam.name }}</span>
+                <span class="eyebrow truncate text-[10px] text-muted-foreground" :title="activeTeam.plan">{{ activeTeam.plan }}</span>
               </div>
               <ChevronsUpDownIcon class="ml-auto" />
             </SidebarMenuButton>

@@ -32,6 +32,8 @@ export interface FacetedFilterOption<T extends string = string> {
   label: string
   value: T
   icon?: Component
+  /** Categorical tone (components/aapm/tone): shown as a dot next to the option and its badge. */
+  tone?: string
 }
 
 export interface DataTableToolbarFilter {

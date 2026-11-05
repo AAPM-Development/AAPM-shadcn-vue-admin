@@ -42,7 +42,7 @@ const firstKey = computed(() => navigator?.userAgent.includes('Mac OS') ? '⌘' 
       </KbdGroup>
     </div>
 
-    <Button variant="outline" size="icon" class="md:hidden" @click="handleOpenChange">
+    <Button variant="outline" size="icon" class="md:hidden" aria-label="Cari menu" title="Cari menu" @click="handleOpenChange">
       <SearchIcon />
     </Button>
 

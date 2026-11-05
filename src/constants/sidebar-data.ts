@@ -55,7 +55,7 @@ export const navData: NavGroup[] = [
     items: [
       { title: 'Brand & design system', url: '/brand', icon: ICONS.brand },
       { title: 'Pengaturan', items: settingsNavItems, icon: ICONS.settings },
-      { title: 'Komponen', url: '/prop-components', icon: ICONS.components },
+      { title: 'Komponen', url: '/ui-kit', icon: ICONS.components },
       { title: 'Pusat bantuan', url: '/help-center', icon: ICONS.help },
       { title: 'Repositori sumber', url: 'https://github.com/AAPM-Development/AAPM-shadcn-vue-admin', icon: ICONS.external },
     ],
