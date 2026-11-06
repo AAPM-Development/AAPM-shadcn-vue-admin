@@ -51,6 +51,24 @@ business value (doc.review) → semantic state (work.pending_decision) → tone 
 - `belum` means nothing yet.
 - `milik-produk` means backend, operations or domain authority owns it.
 
+## Lifecycle patterns
+
+Readiness, decisions, corrections and history live in `src/components/aapm/work/`. They render data and emit intents; readiness, approval and posting always come from the server. Their contracts are typed in `src/design-system/contracts/lifecycle.ts`.
+
+| Need                        | Component                                     | Rule                                                                                                                                |
+| --------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Why an action can't run     | `ReasonedAction`                              | Uses `aria-disabled`, never `disabled`, so the reason stays focusable and readable (tooltip + `aria-describedby`).                  |
+| Can this document move on?  | `ReadinessReview`, `BlockerList`              | `Readiness.result` maps to a semantic state; each blocker has a reason, a resolution and an optional `source` intent.               |
+| Approve / return / reject   | `DecisionForm`                                | `submit` is a prop returning a promise, so the form owns pending, confirmation and the "Hasil belum pasti" (unknown outcome) state. |
+| Change a posted value       | `CorrectionForm`                              | The original stays visible, only changed fields become `Revision`s, a reason is required, and ambiguous id-ID numbers are rejected. |
+| What changed and who did it | `RevisionDiff`, `ActivityFeed`                | Append-only. A correction links to what it `corrects`. Entries carry `source` and `correlationId`.                                  |
+| Long-running work           | `ProgressLog`                                 | Append-only; a fix is a new entry ("Koreksi atas"), never an edit.                                                                  |
+| Acting for someone          | `ApprovalDelegation`                          | Shows "atas nama"; with no eligible approver it becomes a blocker.                                                                  |
+| Feature off for this scope  | `FeatureGate`                                 | Names the scope (Sistem, Tenant, Perusahaan) and who can turn it on.                                                                |
+| Record overview             | `KeyValueList`, `RelatedObjects`, `Entity360` | Empty values read "—"; an empty list reads "Belum ada data."                                                                        |
+
+`/ui-kit` → **Siklus & keputusan** demos each one. **ERP** → **Koreksi penerimaan barang** (`#alur-koreksi`) chains them into one flow: readiness, a blocker resolved, a correction, an approval, then the revision in the history.
+
 ## Adding a component
 
 1. Build it in `src/components/aapm/**`, using tokens and semantic states only, with no literal brand hex.
