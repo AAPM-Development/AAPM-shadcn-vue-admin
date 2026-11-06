@@ -11,6 +11,7 @@ import StockMovement from '@/components/aapm/erp/stock-movement.vue'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
+import KitCorrectionFlow from './kit-correction-flow.vue'
 import KitSection from './kit-section.vue'
 
 const STATES: { value: RegionState, label: string }[] = [
@@ -60,6 +61,9 @@ const state = shallowRef<RegionState>('loading')
       ]"
     />
   </KitSection>
+
+  <!-- B2b: the receipt above, corrected end to end after posting -->
+  <KitCorrectionFlow />
 
   <div class="grid gap-4 xl:grid-cols-2">
     <KitSection id="stok" eyebrow="StockMovementViewer" title="Kartu stok" description="Mutasi bertanda, saldo berjalan, saldo negatif diblokir.">

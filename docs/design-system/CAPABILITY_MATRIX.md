@@ -8,9 +8,9 @@
 
 | Status | B1 | B2 | B3 | B4 | Total |
 |---|---:|---:|---:|---:|---:|
-| Ada | 6 | 0 | 0 | 0 | 6 |
-| Sebagian | 0 | 23 | 6 | 7 | 36 |
-| Belum | 0 | 15 | 19 | 3 | 37 |
+| Ada | 6 | 13 | 0 | 0 | 19 |
+| Sebagian | 0 | 18 | 6 | 7 | 31 |
+| Belum | 0 | 7 | 19 | 3 | 29 |
 | Milik produk | 0 | 0 | 0 | 4 | 4 |
 | **Total** | 6 | 38 | 25 | 14 | 83 |
 
@@ -26,7 +26,7 @@
 | UI-FRM-005 | Textarea / catatan panjang | AAPM Ecosystem | Ada | B1 | P0 | `/ui-kit#input` |  |
 | UI-DAT-004 | Kartu metrik | AAPM Ecosystem | Sebagian | B2 | P0 | — | KPI card masih di pages/dashboard; perlu dipindah ke components/aapm dan diberi demo /ui-kit. |
 | UI-DAT-005 | Klaster / grid KPI | AAPM Ecosystem | Sebagian | B2 | P0 | — | Grid KPI dashboard ada; belum jadi pola reusable dan belum ada demo /ui-kit. |
-| UI-DAT-007 | Ringkasan record / fakta key-value | AAPM Ecosystem | Sebagian | B2 | P0 | `/ui-kit#dokumen` | Header dokumen ada; komponen KeyValueList umum belum. |
+| UI-DAT-007 | Ringkasan record / fakta key-value | AAPM Ecosystem | Ada | B2 | P0 | `/ui-kit#ringkasan` |  |
 | UI-FND-001 | Shell aplikasi adaptif terautentikasi | AAPM Ecosystem | Sebagian | B2 | P0 | — | Shell dipakai di seluruh aplikasi, tetapi belum ada demo /ui-kit dan kontraknya belum ditulis. |
 | UI-FND-004 | Pemilih konteks tenant / farm / perusahaan | AAPM Ecosystem | Sebagian | B2 | P0 | `/ui-kit#perusahaan` | Pemilih perusahaan ada; level farm/tenant dan pemberitahuan pindah konteks ke tab lain belum. |
 | UI-FND-005 | Breadcrumb dan kembali yang aman | AAPM Ecosystem | Sebagian | B2 | P0 | — | Breadcrumb aktif di header, tetapi belum ada demo /ui-kit. |
@@ -37,31 +37,31 @@
 | UI-FRM-001 | Field berlabel dengan error, hint, dan read-only | AAPM Ecosystem | Sebagian | B2 | P0 | `/ui-kit#input` | Field berlabel ada; contoh hint, read-only, dan error per field di /ui-kit#input belum. |
 | UI-FRM-002 | Input angka, mata uang, dan persen | AAPM Ecosystem | Sebagian | B2 | P0 | `/ui-kit#pemilih` | Input angka bulat ada; input mata uang (Rp) dan persen belum. |
 | UI-FRM-004 | Tanggal, rentang tanggal, waktu, tanggal-waktu | AAPM Ecosystem | Sebagian | B2 | P0 | `/ui-kit#pemilih` | Tanggal dan rentang ada; input waktu dan tanggal-waktu belum. |
-| PC05 | Kesiapan dan onboarding perusahaan | ERP · platform | Belum | B2 | P1 | — |  |
-| PC09 | Persetujuan dan delegasi | ERP · platform | Sebagian | B2 | P1 | `/ui-kit#persetujuan` | Timeline ada; approver efektif, delegasi, dan "tidak ada approver" belum. |
-| PC11 | Audit dan lineage | ERP · platform | Sebagian | B2 | P1 | `/ui-kit#dokumen` | Audit drawer ada; korelasi sumber dan akses baca berlingkup belum. |
-| PC17 | Setting dan ketersediaan fitur | ERP · platform | Belum | B2 | P1 | — |  |
+| PC05 | Kesiapan dan onboarding perusahaan | ERP · platform | Ada | B2 | P1 | `/ui-kit#kesiapan` |  |
+| PC09 | Persetujuan dan delegasi | ERP · platform | Ada | B2 | P1 | `/ui-kit#delegasi` |  |
+| PC11 | Audit dan lineage | ERP · platform | Sebagian | B2 | P1 | `/ui-kit#aktivitas` | Narasi audit, sumber, dan ID korelasi tampil; korelasi lintas layanan dan akses baca berlingkup milik backend. |
+| PC17 | Setting dan ketersediaan fitur | ERP · platform | Ada | B2 | P1 | `/ui-kit#fitur` |  |
 | UI-DAT-009 | Perbandingan rencana vs aktual | AAPM Ecosystem | Sebagian | B2 | P1 | — | Grafik HD aktual vs standar ada; pola tabel rencana-vs-aktual dan demo /ui-kit belum. |
-| UI-DAT-010 | Revisi / ringkasan perubahan | AAPM Ecosystem | Sebagian | B2 | P1 | `/ui-kit#dokumen` | Before/after ada di audit drawer; kontrak lengkap (alasan, pelaku, waktu, bukti, state sebelum/sesudah) belum. |
-| UI-DAT-011 | Objek terkait | AAPM Ecosystem | Belum | B2 | P1 | — |  |
-| UI-DAT-012 | Entity 360 | AAPM Ecosystem | Belum | B2 | P1 | — |  |
+| UI-DAT-010 | Revisi / ringkasan perubahan | AAPM Ecosystem | Ada | B2 | P1 | `/ui-kit#revisi` |  |
+| UI-DAT-011 | Objek terkait | AAPM Ecosystem | Ada | B2 | P1 | `/ui-kit#terkait` |  |
+| UI-DAT-012 | Entity 360 | AAPM Ecosystem | Ada | B2 | P1 | `/ui-kit#entitas-360` |  |
 | UI-DAT-013 | Bukti / lampiran | AAPM Ecosystem | Belum | B2 | P1 | — |  |
 | UI-DAT-014 | Kapasitas / utilisasi / cakupan | AAPM Ecosystem | Sebagian | B2 | P1 | `/ui-kit#grafik` | Bullet dan gauge ada; resep load planning / forecast kapasitas belum. |
 | UI-DAT-015 | Tampilan dan pemilihan pohon / hierarki | AAPM Ecosystem | Belum | B2 | P1 | — |  |
 | UI-DAT-016 | Permukaan hasil laporan | AAPM Ecosystem | Belum | B2 | P1 | — |  |
-| UI-DAT-017 | Narasi aktivitas / audit yang imutabel | AAPM Ecosystem | Sebagian | B2 | P1 | `/ui-kit#persetujuan` | Timeline persetujuan ada; activity feed umum belum. |
+| UI-DAT-017 | Narasi aktivitas / audit yang imutabel | AAPM Ecosystem | Ada | B2 | P1 | `/ui-kit#aktivitas` |  |
 | UI-FND-002 | Navigasi dalam berbasis izin | AAPM Ecosystem | Sebagian | B2 | P1 | — | Sidebar bertingkat ada; belum difilter izin dan belum ada demo /ui-kit. |
 | UI-FND-003 | Navigasi seksi dalam halaman | AAPM Ecosystem | Belum | B2 | P1 | — |  |
 | UI-FND-007 | Overlay profil, tema, dan notifikasi | AAPM Ecosystem | Sebagian | B2 | P1 | — | Profil dan tema ada; panel notifikasi belum; belum ada demo /ui-kit. |
 | UI-FND-013 | Navigasi bawah web yang sadar safe-area | AAPM Ecosystem | Belum | B2 | P1 | — |  |
 | UI-FND-014 | Pemilih hierarki / resource scope | AAPM Ecosystem | Belum | B2 | P1 | — |  |
 | UI-FRM-006 | Form panjang multi-seksi | AAPM Ecosystem | Belum | B2 | P1 | — |  |
-| UI-FRM-007 | Form keputusan yang berdampak | AAPM Ecosystem | Sebagian | B2 | P1 | — | Pratinjau dampak ada; resep keputusan dengan alasan wajib dan demo /ui-kit belum. |
-| UI-FRM-008 | Ketersediaan aksi baris beserta alasannya | AAPM Ecosystem | Belum | B2 | P1 | — |  |
+| UI-FRM-007 | Form keputusan yang berdampak | AAPM Ecosystem | Ada | B2 | P1 | `/ui-kit#keputusan` |  |
+| UI-FRM-008 | Ketersediaan aksi baris beserta alasannya | AAPM Ecosystem | Ada | B2 | P1 | `/ui-kit#aksi-beralasan` |  |
 | UI-FRM-009 | Ringkasan rekonsiliasi | AAPM Ecosystem | Sebagian | B2 | P1 | `/ui-kit#jurnal` | Debit = kredit ada; ringkasan rekonsiliasi umum (selisih, penjelasan) belum. |
-| UI-FRM-010 | Entri progres / realisasi append-only | AAPM Ecosystem | Belum | B2 | P1 | — |  |
-| UI-FRM-011 | Form koreksi | AAPM Ecosystem | Belum | B2 | P1 | — |  |
-| UI-WRK-READINESS | Review kesiapan / kelayakan / pemblokir | AAPM Ecosystem | Belum | B2 | P1 | — |  |
+| UI-FRM-010 | Entri progres / realisasi append-only | AAPM Ecosystem | Ada | B2 | P1 | `/ui-kit#progres` |  |
+| UI-FRM-011 | Form koreksi | AAPM Ecosystem | Ada | B2 | P1 | `/ui-kit#koreksi` |  |
+| UI-WRK-READINESS | Review kesiapan / kelayakan / pemblokir | AAPM Ecosystem | Ada | B2 | P1 | `/ui-kit#kesiapan` |  |
 | R01 | Daftar penerimaan standard (tabel server) | ERP · rute | Sebagian | B3 | P0 | `/ui-kit#tabel` | Daftar contoh ada; paging server dan scope inventori belum. |
 | R02 | Siapkan penerimaan standard (form) | ERP · rute | Sebagian | B3 | P0 | `/ui-kit#dokumen` | Header dan editor baris ada; master barang, jasa vs stok belum. |
 | R03 | Simpan penerimaan standard dan hasil commit | ERP · rute | Belum | B3 | P0 | — |  |

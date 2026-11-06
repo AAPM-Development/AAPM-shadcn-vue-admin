@@ -73,7 +73,10 @@ describe('capability registry (83 rows: Ecosystem + ERP)', () => {
   it('marks partly met rows honestly (final review)', () => {
     for (const id of ['UI-FRM-001', 'UI-FRM-002', 'UI-FND-008', 'UI-FND-002'])
       expect(CAPABILITIES.find(c => c.id === id), id).toMatchObject({ status: 'sebagian', subproject: 'B2' })
-    expect(CAPABILITIES.filter(c => c.status === 'ada').map(c => c.id).sort()).toEqual(['UI-DAT-001', 'UI-DAT-006', 'UI-DAT-008', 'UI-FND-012', 'UI-FRM-003', 'UI-FRM-005'])
+    // B1's six plus the thirteen rows B2b delivers in full (PC11 stays sebagian).
+    const B1_ADA = ['UI-DAT-001', 'UI-DAT-006', 'UI-DAT-008', 'UI-FND-012', 'UI-FRM-003', 'UI-FRM-005']
+    const B2B_ADA = ['UI-WRK-READINESS', 'UI-FRM-008', 'UI-FRM-007', 'UI-FRM-011', 'UI-FRM-010', 'UI-DAT-010', 'UI-DAT-017', 'UI-DAT-007', 'UI-DAT-011', 'UI-DAT-012', 'PC05', 'PC09', 'PC17']
+    expect(CAPABILITIES.filter(c => c.status === 'ada').map(c => c.id).sort()).toEqual([...B1_ADA, ...B2B_ADA].sort())
   })
 
   it('every demo link opens the tab that holds its anchor', () => {
@@ -84,5 +87,28 @@ describe('capability registry (83 rows: Ecosystem + ERP)', () => {
       const files = KIT_TAB_FILES[tab!].map(f => readFileSync(join(KIT_DIR, f), 'utf8')).join('\n')
       expect(files, `${c.id}: #${anchor} is not in tab ${tab}`).toContain(`id="${anchor}"`)
     }
+  })
+
+  it('every file a tab lists is actually rendered in that tab', () => {
+    const index = readFileSync(join(ROOT, 'src/pages/ui-kit/index.vue'), 'utf8')
+    for (const [tab, files] of Object.entries(KIT_TAB_FILES)) {
+      for (const f of files) {
+        const siblings = files.filter(s => s !== f).map(s => readFileSync(join(KIT_DIR, s), 'utf8'))
+        const imported = [index, ...siblings].some(src => src.includes(`/${f}'`))
+        expect(imported, `${tab}: ${f} is listed but never imported`).toBe(true)
+      }
+    }
+  })
+
+  it('b2b rows are delivered', () => {
+    const B2B = ['UI-WRK-READINESS', 'UI-FRM-008', 'UI-FRM-007', 'UI-FRM-011', 'UI-FRM-010', 'UI-DAT-010', 'UI-DAT-017', 'UI-DAT-007', 'UI-DAT-011', 'UI-DAT-012', 'PC05', 'PC09', 'PC11', 'PC17']
+    for (const id of B2B) {
+      const c = CAPABILITIES.find(c => c.id === id)!
+      expect(['ada', 'sebagian'], id).toContain(c.status)
+      if (c.status === 'ada')
+        expect(c.components.some(f => f.startsWith('src/components/aapm/work/')), id).toBe(true)
+    }
+    expect(CAPABILITIES.find(c => c.id === 'PC11')).toMatchObject({ status: 'sebagian' })
+    expect(CAPABILITIES.find(c => c.id === 'PC11')!.note).toMatch(/backend/i)
   })
 })

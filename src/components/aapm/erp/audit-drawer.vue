@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import AapmIcon from '@/components/aapm/icon/AapmIcon.vue'
+import RevisionDiff from '@/components/aapm/work/RevisionDiff.vue'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 
 /** ERP AuditDrawer: read-only before/after diff, actor, time, request ID (permission-gated server-side). */
+const at = new Date('2026-11-05T10:42:00+07:00')
 const changes = [
-  { field: 'Jumlah baris 2', before: '1.200 kg', after: '1.250,5 kg' },
-  { field: 'Lot baris 2', before: '—', after: 'KL-2611-11' },
-  { field: 'Status', before: 'Draft', after: 'Diajukan' },
+  { field: 'Jumlah baris 2', before: '1.200 kg', after: '1.250,5 kg', actor: 'Yulia Fitri', at },
+  { field: 'Lot baris 2', before: '—', after: 'KL-2611-11', actor: 'Yulia Fitri', at },
+  { field: 'Status', before: 'Draft', after: 'Diajukan', actor: 'Yulia Fitri', at },
 ]
 </script>
 
@@ -48,16 +50,7 @@ const changes = [
             </dd>
           </div>
         </dl>
-        <ul class="grid gap-2">
-          <li v-for="c in changes" :key="c.field" class="grid gap-1 rounded-lg border p-3 text-sm">
-            <span class="text-xs text-muted-foreground">{{ c.field }}</span>
-            <span class="flex flex-wrap items-center gap-2">
-              <del class="rounded bg-danger-soft px-1.5 text-danger decoration-danger/50">{{ c.before }}</del>
-              <AapmIcon name="chevronRight" :size="14" class="text-muted-foreground" />
-              <ins class="rounded bg-success-soft px-1.5 text-success no-underline">{{ c.after }}</ins>
-            </span>
-          </li>
-        </ul>
+        <RevisionDiff :revisions="changes" compact />
       </div>
     </SheetContent>
   </Sheet>

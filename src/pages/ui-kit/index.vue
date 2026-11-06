@@ -14,6 +14,7 @@ import KitControls from './components/kit-controls.vue'
 import KitData from './components/kit-data.vue'
 import KitErp from './components/kit-erp.vue'
 import KitIdentity from './components/kit-identity.vue'
+import KitLifecycle from './components/kit-lifecycle.vue'
 import KitOverlays from './components/kit-overlays.vue'
 import KitTones from './components/kit-tones.vue'
 
@@ -26,6 +27,7 @@ const TABS = [
   { value: 'navigasi', label: 'Navigasi & overlay' },
   { value: 'data', label: 'Tabel & visual' },
   { value: 'erp', label: 'Komponen ERP' },
+  { value: 'siklus', label: 'Siklus & keputusan' },
   { value: 'identitas', label: 'Identitas & sesi' },
   { value: 'kapabilitas', label: 'Kapabilitas' },
 ] as const satisfies readonly { value: KitTab, label: string }[]
@@ -82,6 +84,9 @@ watch(tab, async () => {
       </TabsContent>
       <TabsContent value="erp" class="grid min-w-0 grid-cols-1 gap-4 pt-2">
         <KitErp />
+      </TabsContent>
+      <TabsContent value="siklus" class="grid min-w-0 grid-cols-1 gap-4 pt-2">
+        <KitLifecycle />
       </TabsContent>
       <TabsContent value="identitas" class="grid min-w-0 grid-cols-1 gap-4 pt-2">
         <KitIdentity />

@@ -94,3 +94,32 @@ export function formatRelativeId(since: Date | number | undefined, now: Date | n
     return RELATIVE_ID.format(-Math.floor(days / 30), 'month')
   return RELATIVE_ID.format(-Math.max(1, Math.round(days / 365)), 'year')
 }
+
+/**
+ * Parse an Indonesian-formatted number: "." groups thousands (exactly three digits per group),
+ * "," marks decimals. "1.250" → 1250, "1.250,5" → 1250.5, "1250,5" → 1250.5. Anything ambiguous
+ * ("1.2.3", "1,250.5", "1.25") returns null — never silently change the magnitude (ERP UX-05).
+ */
+export function parseNumberId(input: string): number | null {
+  const s = input.trim()
+  if (!/^-?(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d+)?$/.test(s))
+    return null
+  return Number(s.replaceAll('.', '').replace(',', '.'))
+}
+
+/**
+ * The id-ID canonical text of a number `parseNumberId` accepts, built from the typed digits and
+ * never from the float, so no value changes magnitude or loses digits: integer regrouped with `.`,
+ * leading zeros and trailing decimal zeros trimmed, `-0` read as `0`. Null when not accepted.
+ */
+export function canonicalNumberId(input: string): string | null {
+  const s = input.trim()
+  if (parseNumberId(s) === null)
+    return null
+  const negative = s.startsWith('-')
+  const [intRaw = '', decRaw = ''] = s.replace(/^-/, '').replaceAll('.', '').split(',')
+  const int = intRaw.replace(/^0+(?=\d)/, '').replace(/\B(?=(?:\d{3})+(?!\d))/g, '.')
+  const dec = decRaw.replace(/0+$/, '')
+  const body = dec ? `${int},${dec}` : int
+  return negative && body !== '0' ? `-${body}` : body
+}

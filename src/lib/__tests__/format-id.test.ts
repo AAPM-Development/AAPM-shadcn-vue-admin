@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatCompact, formatNumber, formatPercent, formatRelativeId, formatRupiah, formatSigned } from '../format-id'
+import { canonicalNumberId, formatCompact, formatNumber, formatPercent, formatRelativeId, formatRupiah, formatSigned, parseNumberId } from '../format-id'
 
 describe('formatNumber', () => {
   it('uses period thousands separators', () => {
@@ -95,5 +95,42 @@ describe('formatRelativeId · calendar days', () => {
   it('reads a year once it is about a year', () => {
     expect(formatRelativeId(new Date(now.getTime() - 362 * 86_400_000), now)).toBe('tahun lalu')
     expect(formatRelativeId(new Date(now.getTime() - 3 * 365 * 86_400_000), now)).toBe('3 tahun yang lalu')
+  })
+})
+
+describe('parseNumberId', () => {
+  it('parses id-ID numbers and rejects ambiguous ones', () => {
+    expect(parseNumberId('1.250')).toBe(1250)
+    expect(parseNumberId('1.250,5')).toBe(1250.5)
+    expect(parseNumberId('1250,5')).toBe(1250.5)
+    expect(parseNumberId('12')).toBe(12)
+    expect(parseNumberId(' 1.200.000,25 ')).toBe(1200000.25)
+    expect(parseNumberId('-3,5')).toBe(-3.5)
+    for (const bad of ['1.2.3', '1,250.5', '1.25', '', '12,3,4', 'abc', '1.2500'])
+      expect(parseNumberId(bad), bad).toBeNull()
+  })
+})
+
+describe('canonicalNumberId', () => {
+  // Final review #2: canonicalise from the validated string, never from the float.
+  it.each([
+    ['1.250,5', '1.250,5'],
+    ['1250,5', '1.250,5'],
+    ['1250', '1.250'],
+    ['1.250,50', '1.250,5'],
+    ['1,000', '1'],
+    ['0001250', '1.250'],
+    ['0,0000001', '0,0000001'],
+    ['12.345.678.901.234.567', '12.345.678.901.234.567'],
+    ['-1250,5', '-1.250,5'],
+    ['-0,0', '0'],
+    [' 1.200 ', '1.200'],
+  ])('%s → %s', (input, out) => {
+    expect(canonicalNumberId(input)).toBe(out)
+  })
+
+  it('rejects what parseNumberId rejects', () => {
+    for (const s of ['1.2.3', '1,250.5', '1.25', '', 'abc'])
+      expect(canonicalNumberId(s), s).toBeNull()
   })
 })
